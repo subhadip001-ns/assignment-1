@@ -9,7 +9,6 @@ from sqlalchemy import text
 from src.db.postgres import SessionLocal, init_db
 from src.models.student import Student
 from src.models.course import Course
-from src.models.enrollment import Enrollment
 
 
 def clear_database(db: Session):
