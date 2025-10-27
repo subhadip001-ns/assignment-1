@@ -1,15 +1,30 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.db.postgres import init_db
 from src.routes import student_router, course_router, enrollment_router
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Lifespan event handler for FastAPI application.
+    Handles startup and shutdown events.
+    """
+    # Startup: Initialize database tables
+    init_db()
+    yield
+    # Shutdown: Add any cleanup logic here if needed
+
+
 app = FastAPI(
     title="Student Course Enrollment Portal API",
     description="A RESTful API for managing students, courses, and enrollments in an educational institution",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    lifespan=lifespan
 )
 
 app.add_middleware(
@@ -23,14 +38,6 @@ app.add_middleware(
 app.include_router(student_router)
 app.include_router(course_router)
 app.include_router(enrollment_router)
-
-
-@app.on_event("startup")
-async def startup_event():
-    """
-    Initialize database tables on application startup
-    """
-    init_db()
 
 
 @app.get("/", tags=["root"])
