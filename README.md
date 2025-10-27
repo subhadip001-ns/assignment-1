@@ -73,7 +73,7 @@ src/
 ### Prerequisites
 - Python 3.14+
 - PostgreSQL
-- uv package manager
+- uv package manager (https://docs.astral.sh/uv/)
 
 ### Installation
 
@@ -96,14 +96,18 @@ See [ENV_SETUP.md](ENV_SETUP.md) for detailed environment configuration.
 uv sync
 ```
 
-4. **Create the PostgreSQL database**
+4. **Run the DB from docker**
 ```bash
-createdb enrollment_db
+docker compose up -d
 ```
-
 5. **Run the application**
 ```bash
 python main.py
+```
+
+6. **Seed the database**
+```bash
+uv run seed.py
 ```
 
 The API will be available at:
@@ -115,7 +119,7 @@ The API will be available at:
 
 Run the provided test script:
 ```bash
-python test_api.py
+uv run pytest test_api.py -v
 ```
 
 ## 📚 API Endpoints
@@ -197,12 +201,6 @@ The API provides comprehensive error handling:
 - **Interactive API Documentation**: Visit `/docs` for Swagger UI
 - **Alternative Documentation**: Visit `/redoc` for ReDoc
 
-## Security Features
-
-- Email uniqueness constraint
-- Prevent duplicate enrollments
-- Cascade deletion for data integrity
-- Input validation using Pydantic
 
 ## Project Structure
 
@@ -248,3 +246,18 @@ Check if the API is running:
 curl http://localhost:8000/health
 ```
 
+## What I Learnt from this Assignment
+
+- How to use FastAPI to create a RESTful API
+- How to use SQLAlchemy to interact with a PostgreSQL database
+- How to use Pydantic to validate data
+- How to use pytest to test the API
+- How to use curl to test the API
+- How to use Swagger UI to test the API
+- How to use ReDoc to test the API
+
+## Future Improvements
+
+- Add Authentication and Authorization
+- Add Logging
+- Few More
