@@ -36,5 +36,12 @@ def init_db():
     Creates all tables defined in models if they don't exist.
     """
     from src.models import student, course, enrollment
-    Base.metadata.create_all(bind=engine)
+    
+    print("Initializing database...")
+    try:
+        Base.metadata.create_all(bind=engine)
+        print("Database initialized successfully")
+    except Exception as e:
+        print(f"Error initializing database: {e}")
+        return False
 
