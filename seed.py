@@ -5,6 +5,7 @@ This script creates sample students and courses for testing and development.
 """
 
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from src.db.postgres import SessionLocal, init_db
 from src.models.student import Student
 from src.models.course import Course
@@ -17,10 +18,11 @@ def clear_database(db: Session):
     WARNING: This will delete all data!
     """
     print("Clearing existing data...")
-    db.query(Enrollment).delete()
-    db.query(Student).delete()
-    db.query(Course).delete()
+    
+    # TRUNCATE is faster and automatically resets sequences with RESTART IDENTITY
+    db.execute(text("TRUNCATE TABLE enrollments, students, courses RESTART IDENTITY CASCADE"))
     db.commit()
+    
     print("Database cleared.")
 
 
