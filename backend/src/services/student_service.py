@@ -10,36 +10,7 @@ from src.schemas.student import StudentCreate, StudentUpdate
 class StudentService:
     """Service layer for student-related business logic"""
 
-    @staticmethod
-    def create_student(db: Session, student_data: StudentCreate) -> Student:
-        """
-        Create a new student
-        
-        Args:
-            db: Database session
-            student_data: Student creation data
-            
-        Returns:
-            Created student object
-            
-        Raises:
-            HTTPException: If email already exists
-        """
-        try:
-            student = Student(
-                name=student_data.name,
-                email=student_data.email
-            )
-            db.add(student)
-            db.commit()
-            db.refresh(student)
-            return student
-        except IntegrityError:
-            db.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Student with email {student_data.email} already exists"
-            )
+    # Student creation is now handled by AuthService during login/signup
 
     @staticmethod
     def get_student(db: Session, student_id: int) -> Student:

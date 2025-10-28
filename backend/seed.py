@@ -1,13 +1,13 @@
 """
 Database seeding script to populate the database with sample data.
 
-This script creates sample students and courses for testing and development.
+This script creates sample courses for testing and development.
+Students are created via the authentication system during login/signup.
 """
 
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from src.db.postgres import SessionLocal, init_db
-from src.models.student import Student
 from src.models.course import Course
 
 
@@ -23,34 +23,6 @@ def clear_database(db: Session):
     db.commit()
     
     print("Database cleared.")
-
-
-def seed_students(db: Session):
-    """Create sample students."""
-    print("\nSeeding students...")
-    
-    students_data = [
-        {"name": "Alice Johnson", "email": "alice.johnson@university.edu"},
-        {"name": "Bob Smith", "email": "bob.smith@university.edu"},
-        {"name": "Charlie Davis", "email": "charlie.davis@university.edu"},
-        {"name": "Diana Martinez", "email": "diana.martinez@university.edu"},
-        {"name": "Ethan Brown", "email": "ethan.brown@university.edu"},
-        {"name": "Fiona Wilson", "email": "fiona.wilson@university.edu"},
-        {"name": "George Taylor", "email": "george.taylor@university.edu"},
-        {"name": "Hannah Lee", "email": "hannah.lee@university.edu"},
-        {"name": "Isaac Anderson", "email": "isaac.anderson@university.edu"},
-        {"name": "Julia Thomas", "email": "julia.thomas@university.edu"},
-    ]
-    
-    students = []
-    for student_data in students_data:
-        student = Student(**student_data)
-        db.add(student)
-        students.append(student)
-    
-    db.commit()
-    print(f"Created {len(students)} students")
-    return students
 
 
 def seed_courses(db: Session):
@@ -141,16 +113,15 @@ def seed_database(clear_first: bool = True):
         if clear_first:
             clear_database(db)
         
-        # Seed data
-        students = seed_students(db)
+        # Seed data (only courses, students are created via auth)
         courses = seed_courses(db)
-        
+
         print("\n" + "="*50)
         print("Database seeding completed successfully!")
         print("="*50)
         print(f"Summary:")
-        print(f"   - Students: {len(students)}")
         print(f"   - Courses: {len(courses)}")
+        print(f"   - Students: Created via authentication system")
         print("="*50)
         
     except Exception as e:
