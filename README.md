@@ -10,6 +10,11 @@ The Student Course Enrollment Portal is a comprehensive backend API that facilit
 - **Enrollment Management**: Many-to-many relationship handling between students and courses
 - **Association Queries**: Retrieve students per course and courses per student
 
+## Related READMEs
+
+- Frontend guide: [frontend/README.md](frontend/README.md)
+- AI module guide: [backend/src/ai/README.md](backend/src/ai/README.md)
+
 ## Architecture
 
 The project follows a clean, layered architecture:
