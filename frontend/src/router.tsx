@@ -85,6 +85,7 @@ const enrollmentsRoute = createRoute({
   component: Enrollments,
 })
 
+
 // Create the route tree
 const routeTree = rootRoute.addChildren([
   loginRoute,

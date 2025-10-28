@@ -279,3 +279,24 @@ uv run python -m pytest test/test_courses.py -v
 ```
 
 ### AI Service
+
+### Observability (Langfuse)
+
+- Add to your `.env`:
+
+### To run Langfuse use python 3.12
+
+```
+LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
+LANGFUSE_SECRET_KEY=your_langfuse_secret_key
+LANGFUSE_HOST=https://cloud.langfuse.com
+```
+uv run --python 3.12 python main.py
+
+```
+LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
+LANGFUSE_SECRET_KEY=your_langfuse_secret_key
+LANGFUSE_HOST=https://cloud.langfuse.com
+```
+
+Instrumentation is added to `ai_routes.py` to trace `/ai/chat` and `/ai/chat/stream` requests and record generations.

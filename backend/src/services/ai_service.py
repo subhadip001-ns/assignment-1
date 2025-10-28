@@ -60,20 +60,26 @@ class AIService:
                 # Execute the tools
                 tool_results = []
                 for tool_call in ai_msg.tool_calls:
-                    if tool_call["name"] == "add_numbers_tool":
+                    if tool_call["name"] == "add_numbers":
                         result = add_numbers_tool.invoke(tool_call["args"])
                         tool_results.append(ToolMessage(
                             content=str(result),
                             tool_call_id=tool_call["id"]
                         ))
-                    elif tool_call["name"] == "fetch_courses_tool":
+                    elif tool_call["name"] == "fetch_all_courses":
                         result = fetch_courses_tool.invoke(tool_call["args"])
                         tool_results.append(ToolMessage(
                             content=str(result),
                             tool_call_id=tool_call["id"]
                         ))
-                    elif tool_call["name"] == "enroll_tool":
+                    elif tool_call["name"] == "enroll_into_course":
                         result = enroll_tool.invoke(tool_call["args"])
+                        tool_results.append(ToolMessage(
+                            content=str(result),
+                            tool_call_id=tool_call["id"]
+                        ))
+                    elif tool_call["name"] == "search_course_information":
+                        result = search_course_information_tool.invoke(tool_call["args"])
                         tool_results.append(ToolMessage(
                             content=str(result),
                             tool_call_id=tool_call["id"]

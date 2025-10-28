@@ -3,7 +3,7 @@ name = "assignment-1"
 version = "0.1.0"
 description = "Nustudio101-assignment-1"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.120.0",
     "uvicorn>=0.38.0",
@@ -21,6 +21,7 @@ dependencies = [
     "langchain-groq>=1.0.0",
     "langchain-community>=0.3.0",
     "voyageai>=0.2.0",
+    "langfuse>=2.0.0",
 ]
 
 [tool.pytest.ini_options]

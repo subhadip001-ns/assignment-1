@@ -14,12 +14,16 @@ This module powers the AI assistant used by the Enrollment Portal. It combines a
 
 - `GROQ_API_KEY`: Required for Groq LLM access
 - `VOYAGE_AI_API_KEY`: Required for Voyage AI embeddings used by the RAG service
+- `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_HOST`: Required for Langfuse observability
 
 Set them in the root `.env`:
 
 ```
 GROQ_API_KEY=your_groq_api_key
 VOYAGE_AI_API_KEY=your_voyage_api_key
+LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
+LANGFUSE_SECRET_KEY=your_langfuse_secret_key
+LANGFUSE_HOST=https://cloud.langfuse.com
 ```
 
 ## How It Works
@@ -53,7 +57,7 @@ All endpoints require authentication (JWT) via the existing auth middleware.
 ## Local Development
 
 - Ensure backend runs (`python main.py`) and DB is up via Docker Compose.
-- Provide `GROQ_API_KEY` and `VOYAGE_AI_API_KEY`.
+- Provide `GROQ_API_KEY`, `VOYAGE_AI_API_KEY`, and Langfuse env vars.
 - Test with curl:
 
 ```
