@@ -119,7 +119,7 @@ The API will be available at:
 
 Run the provided test script:
 ```bash
-uv run pytest test_api.py -v
+uv run -m pytest -v test_api.py
 ```
 
 ## 📚 API Endpoints
