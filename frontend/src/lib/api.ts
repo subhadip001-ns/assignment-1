@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {
+import type {
   Student,
   Course,
   Enrollment,
@@ -30,7 +30,12 @@ export interface LoginResponse {
 
 export interface LogoutResponse {
   message: string;
-  user: any;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
+  };
 }
 
 const API_BASE_URL = 'http://localhost:8000';

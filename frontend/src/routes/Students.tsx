@@ -1,18 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { studentsApi } from '@/lib/api'
-import { Student, CreateStudentRequest } from '@/lib/types'
-import { Plus, Edit, Trash2, Users } from 'lucide-react'
+import { type Student } from '@/lib/types'
+import { Edit, Trash2, Users } from 'lucide-react'
 
 export function Students() {
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [formData, setFormData] = useState<CreateStudentRequest>({ name: '', email: '' })
 
   useEffect(() => {
     loadStudents()
@@ -29,17 +24,6 @@ export function Students() {
     }
   }
 
-  const handleCreateStudent = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      await studentsApi.create(formData)
-      setFormData({ name: '', email: '' })
-      setIsCreateDialogOpen(false)
-      loadStudents()
-    } catch (error) {
-      console.error('Error creating student:', error)
-    }
-  }
 
   const handleDeleteStudent = async (id: number) => {
     if (confirm('Are you sure you want to delete this student?')) {
@@ -58,46 +42,9 @@ export function Students() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Students</h1>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Student
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Student</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleCreateStudent} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                Create Student
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <p className="text-gray-600 mt-2">View and manage all registered students</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

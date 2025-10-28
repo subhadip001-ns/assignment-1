@@ -4,6 +4,7 @@ import { Students } from './routes/Students'
 import { Courses } from './routes/Courses'
 import { Enrollments } from './routes/Enrollments'
 import { Login } from './routes/Login'
+import { CourseBrowser } from './routes/CourseBrowser'
 import { Layout } from './components/Layout'
 import { ProtectedRoute } from './components/ProtectedRoute'
 
@@ -48,6 +49,13 @@ const indexRoute = createRoute({
   component: Dashboard,
 })
 
+// Create course browser route (protected - for students)
+const courseBrowserRoute = createRoute({
+  getParentRoute: () => protectedRoutes,
+  path: '/browse-courses',
+  component: CourseBrowser,
+})
+
 // Create students route (admin only)
 const studentsRoute = createRoute({
   getParentRoute: () => adminRoutes,
@@ -74,6 +82,7 @@ const routeTree = rootRoute.addChildren([
   loginRoute,
   protectedRoutes.addChildren([
     indexRoute,
+    courseBrowserRoute,
     adminRoutes.addChildren([
       studentsRoute,
       coursesRoute,

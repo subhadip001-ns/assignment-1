@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from '@tanstack/react-router'
-import { Users, BookOpen, UserCheck, Home, LogOut, User } from 'lucide-react'
+import { Users, BookOpen, UserCheck, Home, LogOut, User, GraduationCap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth'
 
@@ -34,6 +34,15 @@ export function Layout() {
                   <Home className="w-4 h-4 mr-2" />
                   Dashboard
                 </Link>
+                {!isAdmin && (
+                  <Link
+                    to="/browse-courses"
+                    className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  >
+                    <GraduationCap className="w-4 h-4 mr-2" />
+                    Browse Courses
+                  </Link>
+                )}
                 {isAdmin && (
                   <>
                     <Link

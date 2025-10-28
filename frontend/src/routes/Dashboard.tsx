@@ -1,16 +1,21 @@
 import { useState, useEffect, useCallback } from 'react'
+import { Link } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/lib/auth'
-import { coursesApi, studentsApi } from '@/lib/api'
-import { Course } from '@/lib/types'
+import { coursesApi, studentsApi, enrollmentsApi } from '@/lib/api'
+import { type Course } from '@/lib/types'
 import { Users, BookOpen, UserCheck, GraduationCap, Shield, Plus } from 'lucide-react'
 
 export function Dashboard() {
   const { user } = useAuth()
   const [courses, setCourses] = useState<Course[]>([])
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([])
+  const [stats, setStats] = useState({
+    totalStudents: 0,
+    totalEnrollments: 0
+  })
   const [loading, setLoading] = useState(true)
 
   const isAdmin = user?.role === 'admin'
@@ -18,9 +23,17 @@ export function Dashboard() {
   const loadDashboardData = useCallback(async () => {
     try {
       if (isAdmin) {
-        // Admin sees all courses
-        const coursesRes = await coursesApi.getAll()
+        // Admin sees all courses, students, and enrollments
+        const [coursesRes, studentsRes, enrollmentsRes] = await Promise.all([
+          coursesApi.getAll(),
+          studentsApi.getAll(),
+          enrollmentsApi.getAll()
+        ])
         setCourses(coursesRes.data)
+        setStats({
+          totalStudents: studentsRes.data.length,
+          totalEnrollments: enrollmentsRes.data.length
+        })
       } else {
         // Student sees available courses and their enrollments
         const [coursesRes, enrolledRes] = await Promise.all([
@@ -85,8 +98,8 @@ export function Dashboard() {
                 <UserCheck className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">--</div>
-                <p className="text-xs text-muted-foreground">Connect to backend to see</p>
+                <div className="text-2xl font-bold">{stats.totalEnrollments}</div>
+                <p className="text-xs text-muted-foreground">Total student enrollments</p>
               </CardContent>
             </Card>
 
@@ -96,8 +109,8 @@ export function Dashboard() {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">--</div>
-                <p className="text-xs text-muted-foreground">Connect to backend to see</p>
+                <div className="text-2xl font-bold">{stats.totalStudents}</div>
+                <p className="text-xs text-muted-foreground">Registered students</p>
               </CardContent>
             </Card>
           </div>
@@ -108,18 +121,24 @@ export function Dashboard() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full justify-start bg-blue-600 hover:bg-blue-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add New Course
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Users className="w-4 h-4 mr-2" />
-                  Manage Students
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <UserCheck className="w-4 h-4 mr-2" />
-                  View Enrollments
-                </Button>
+                <Link to="/courses">
+                  <Button className="w-full justify-start bg-blue-600 hover:bg-blue-700">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add New Course
+                  </Button>
+                </Link>
+                <Link to="/students">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Users className="w-4 h-4 mr-2" />
+                    Manage Students
+                  </Button>
+                </Link>
+                <Link to="/enrollments">
+                  <Button variant="outline" className="w-full justify-start">
+                    <UserCheck className="w-4 h-4 mr-2" />
+                    View Enrollments
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
@@ -214,9 +233,12 @@ export function Dashboard() {
                 Browse available courses and enroll in the ones that interest you.
                 Start building your academic journey today!
               </p>
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                Browse All Courses
-              </Button>
+              <Link to="/browse-courses">
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <GraduationCap className="w-4 h-4 mr-2" />
+                  Browse All Courses
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </>
