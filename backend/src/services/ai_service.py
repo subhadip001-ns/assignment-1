@@ -10,12 +10,13 @@ from ..ai.prompts import SYSTEM_PROMPT
 
 
 class AIService:
-    def __init__(self):
-        # Initialize Groq LLM
+    def __init__(self, is_streaming: bool = False):
+        # Initialize Groq LLM with streaming enabled
         self.llm = ChatGroq(
             groq_api_key=os.getenv("GROQ_API_KEY"),
             model_name="llama-3.3-70b-versatile",  # Using a supported Groq model
-            temperature=0.7
+            temperature=0.7,
+            streaming=is_streaming
         )
 
         # Define tools
@@ -71,7 +72,7 @@ class AIService:
 
     def chat_stream(self, message: str, chat_history: list = None) -> Iterator[str]:
         """
-        Streaming chat method
+        Streaming chat method with real LLM streaming and tool support
         """
         if chat_history is None:
             chat_history = []
@@ -88,21 +89,27 @@ class AIService:
         messages.append(HumanMessage(content=message))
 
         try:
-            # For streaming, we'll simulate it by yielding chunks of the response
-            response = self.chat(message, chat_history)
+            # First, check if the LLM wants to use tools (non-streaming decision)
+            ai_msg = self.llm_with_tools.invoke(messages)
 
-            # Yield the response in chunks for streaming effect
-            words = response.split()
-            current_chunk = ""
+            if ai_msg.tool_calls:
+                # Execute tools and add results to messages
+                tool_results = []
+                for tool_call in ai_msg.tool_calls:
+                    if tool_call["name"] == "add_numbers":
+                        result = add_numbers.invoke(tool_call["args"])
+                        tool_results.append(ToolMessage(
+                            content=str(result),
+                            tool_call_id=tool_call["id"]
+                        ))
 
-            for word in words:
-                current_chunk += word + " "
-                if len(current_chunk) >= 50:  # Yield every ~50 characters
-                    yield current_chunk
-                    current_chunk = ""
+                # Add tool results to messages for final streaming response
+                messages.extend([ai_msg] + tool_results)
 
-            if current_chunk:
-                yield current_chunk
+            # Stream the final response from LLM
+            for chunk in self.llm.stream(messages):
+                if chunk.content:
+                    yield chunk.content
 
         except Exception as e:
             yield f"Error: {str(e)}"

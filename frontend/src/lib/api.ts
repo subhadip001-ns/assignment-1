@@ -111,3 +111,77 @@ export const authApi = {
   logout: () => api.post<LogoutResponse>('/auth/logout'),
   getCurrentUser: () => api.get('/auth/me'),
 };
+
+// AI Chat API
+export interface ChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export interface ChatRequest {
+  message: string
+  chat_history?: ChatMessage[]
+}
+
+export interface ChatResponse {
+  response: string
+}
+
+export const aiApi = {
+  // Regular chat (non-streaming)
+  chat: (message: string, chatHistory?: ChatMessage[]) =>
+    api.post<ChatResponse>('/ai/chat', {
+      message,
+      chat_history: chatHistory || []
+    }),
+
+  // Streaming chat
+  streamChat: async (
+    message: string,
+    chatHistory: ChatMessage[],
+    onChunk: (chunk: string) => void
+  ) => {
+    const response = await fetch(`${API_BASE_URL}/ai/chat/stream`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify({
+        message,
+        chat_history: chatHistory,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const reader = response.body?.getReader()
+    if (!reader) {
+      throw new Error('Failed to get response reader')
+    }
+
+    const decoder = new TextDecoder()
+    let buffer = ''
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || '' // Keep incomplete line in buffer
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6) // Remove 'data: ' prefix
+          if (data === '[DONE]') {
+            return
+          }
+          onChunk(data)
+        }
+      }
+    }
+  },
+};

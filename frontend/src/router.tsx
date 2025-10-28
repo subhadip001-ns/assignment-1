@@ -5,6 +5,7 @@ import { Courses } from './routes/Courses'
 import { Enrollments } from './routes/Enrollments'
 import { Login } from './routes/Login'
 import { CourseBrowser } from './routes/CourseBrowser'
+import { AIChat } from './routes/AIChat'
 import { Layout } from './components/Layout'
 import { ProtectedRoute } from './components/ProtectedRoute'
 
@@ -56,6 +57,13 @@ const courseBrowserRoute = createRoute({
   component: CourseBrowser,
 })
 
+// Create AI chat route (protected - for all users)
+const aiChatRoute = createRoute({
+  getParentRoute: () => protectedRoutes,
+  path: '/ai-chat',
+  component: AIChat,
+})
+
 // Create students route (admin only)
 const studentsRoute = createRoute({
   getParentRoute: () => adminRoutes,
@@ -83,6 +91,7 @@ const routeTree = rootRoute.addChildren([
   protectedRoutes.addChildren([
     indexRoute,
     courseBrowserRoute,
+    aiChatRoute,
     adminRoutes.addChildren([
       studentsRoute,
       coursesRoute,
