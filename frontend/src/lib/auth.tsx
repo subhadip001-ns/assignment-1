@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { authApi, type LoginRequest } from './api'
 
 export type UserRole = 'admin' | 'student'
 
@@ -35,37 +36,45 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check if user is logged in on app start
     const savedUser = localStorage.getItem('user')
-    if (savedUser) {
+    const savedToken = localStorage.getItem('token')
+
+    if (savedUser && savedToken) {
       try {
         setUser(JSON.parse(savedUser))
+        // TODO: Optionally validate token with API here
       } catch (error) {
         console.error('Error parsing saved user:', error)
         localStorage.removeItem('user')
+        localStorage.removeItem('token')
       }
     }
     setIsLoading(false)
   }, [])
 
   const login = async (email: string, password: string, role: UserRole): Promise<boolean> => {
-    // Mock authentication - in real app, this would call your API
     setIsLoading(true)
 
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      // Mock successful login - accept any email/password for demo
-      const mockUser: User = {
-        id: Math.floor(Math.random() * 1000),
-        name: role === 'admin' ? 'Admin User' : 'Student User',
+      const loginData: LoginRequest = {
         email,
+        password,
         role
       }
 
-      setUser(mockUser)
-      localStorage.setItem('user', JSON.stringify(mockUser))
+      const response = await authApi.login(loginData)
+
+      const user: User = {
+        id: response.data.user.id,
+        name: response.data.user.name,
+        email: response.data.user.email,
+        role: response.data.user.role as UserRole
+      }
+
+      setUser(user)
+      localStorage.setItem('user', JSON.stringify(user))
+      localStorage.setItem('token', response.data.access_token)
+
       return true
     } catch (error) {
       console.error('Login error:', error)
@@ -75,9 +84,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      if (token) {
+        await authApi.logout()
+      }
+    } catch (error) {
+      console.error('Logout API error:', error)
+      // Continue with local logout even if API call fails
+    }
+
     setUser(null)
     localStorage.removeItem('user')
+    localStorage.removeItem('token')
   }
 
   const value: AuthContextType = {

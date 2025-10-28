@@ -3,25 +3,11 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from src.db.postgres import get_db
-from src.schemas.student import StudentCreate, StudentUpdate, StudentResponse
+from src.schemas.student import StudentUpdate, StudentResponse
 from src.schemas.course import CourseResponse
 from src.services.student_service import StudentService
 
 router = APIRouter(prefix="/students", tags=["students"])
-
-
-@router.post("/", response_model=StudentResponse, status_code=status.HTTP_201_CREATED)
-def create_student(
-    student_data: StudentCreate,
-    db: Session = Depends(get_db)
-):
-    """
-    Create a new student
-    
-    - **name**: Student's full name (required)
-    - **email**: Student's email address (required, must be unique)
-    """
-    return StudentService.create_student(db, student_data)
 
 
 @router.get("/{student_id}", response_model=StudentResponse)

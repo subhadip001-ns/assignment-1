@@ -1,5 +1,6 @@
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
+from sqlalchemy import inspect as sa_inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
@@ -40,6 +41,19 @@ def init_db():
     print("Initializing database...")
     try:
         Base.metadata.create_all(bind=engine)
+
+        # Lightweight migration: ensure students.password_hash exists
+        inspector = sa_inspect(engine)
+        if 'students' in inspector.get_table_names():
+            cols = [c['name'] for c in inspector.get_columns('students')]
+            if 'password_hash' not in cols:
+                print("Adding missing column students.password_hash ...")
+                with engine.begin() as conn:
+                    conn.execute(
+                        text("ALTER TABLE students ADD COLUMN password_hash VARCHAR(255) NOT NULL DEFAULT ''")
+                    )
+                print("Column students.password_hash added")
+
         print("Database initialized successfully")
     except Exception as e:
         print(f"Error initializing database: {e}")

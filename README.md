@@ -117,9 +117,25 @@ The API will be available at:
 
 ### Test the API
 
-Run the provided test script:
+Use uv's module mode to run pytest:
+
+- Run all tests (split across test/):
 ```bash
-uv run -m pytest -v test_api.py
+cd backend
+uv run python -m pytest -v
+```
+
+- Run a specific suite:
+```bash
+uv run python -m pytest test/test_auth.py -v
+uv run python -m pytest test/test_students.py -v
+uv run python -m pytest test/test_courses.py -v
+uv run python -m pytest test/test_enrollments.py -v
+```
+
+- Run a single test:
+```bash
+uv run python -m pytest test/test_auth.py::TestAuthEndpoints::test_admin_login_success -v
 ```
 
 ## 📚 API Endpoints
