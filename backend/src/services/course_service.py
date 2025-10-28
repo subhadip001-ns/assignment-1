@@ -4,6 +4,7 @@ from typing import List
 
 from src.models.course import Course
 from src.schemas.course import CourseCreate, CourseUpdate
+from src.services.rag_service import rag_service
 
 
 class CourseService:
@@ -13,11 +14,11 @@ class CourseService:
     def create_course(db: Session, course_data: CourseCreate) -> Course:
         """
         Create a new course
-        
+
         Args:
             db: Database session
             course_data: Course creation data
-            
+
         Returns:
             Created course object
         """
@@ -29,6 +30,18 @@ class CourseService:
         db.add(course)
         db.commit()
         db.refresh(course)
+
+        # Ingest course document into RAG system
+        try:
+            rag_service.ingest_course_document(
+                course_id=course.id,
+                course_name=course.name,
+                course_description=course.description or ""
+            )
+        except Exception as e:
+            # Log the error but don't fail course creation
+            print(f"Warning: Failed to ingest course {course.id} into RAG system: {e}")
+
         return course
 
     @staticmethod

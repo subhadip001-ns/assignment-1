@@ -262,18 +262,15 @@ Check if the API is running:
 curl http://localhost:8000/health
 ```
 
-## What I Learnt from this Assignment
+## AI Integration
 
-- How to use FastAPI to create a RESTful API
-- How to use SQLAlchemy to interact with a PostgreSQL database
-- How to use Pydantic to validate data
-- How to use pytest to test the API
-- How to use curl to test the API
-- How to use Swagger UI to test the API
-- How to use ReDoc to test the API
+### RAG Service
 
-## Future Improvements
+The RAG service is used to search for course information. It uses the VoyageAI SDK to search for course information.
 
-- Add Authentication and Authorization
-- Add Logging
-- Few More
+```bash
+# To ingest the course documents
+uv run python -m pytest test/test_courses.py -v
+```
+
+### AI Service

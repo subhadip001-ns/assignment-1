@@ -5,7 +5,12 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 
-from ..ai.tools import add_numbers
+from ..ai.tools import (
+    fetch_all_courses as fetch_courses_tool,
+    enroll_into_course as enroll_tool,
+    add_numbers as add_numbers_tool,
+    search_course_information as search_course_information_tool
+)
 from ..ai.prompts import SYSTEM_PROMPT
 
 
@@ -14,13 +19,14 @@ class AIService:
         # Initialize Groq LLM with streaming enabled
         self.llm = ChatGroq(
             groq_api_key=os.getenv("GROQ_API_KEY"),
-            model_name="llama-3.3-70b-versatile",  # Using a supported Groq model
-            temperature=0.7,
-            streaming=is_streaming
+            model_name="meta-llama/llama-4-scout-17b-16e-instruct",  # Using a supported Groq model
+            temperature=0.2,
+            streaming=is_streaming,
+            # reasoning_effort="low"
         )
 
         # Define tools
-        self.tools = [add_numbers]
+        self.tools = [add_numbers_tool, fetch_courses_tool, enroll_tool, search_course_information_tool]
 
         # Bind tools to the LLM
         self.llm_with_tools = self.llm.bind_tools(self.tools)
@@ -46,14 +52,28 @@ class AIService:
         try:
             # Use the LLM with tools
             ai_msg = self.llm_with_tools.invoke(messages)
+            print("AI Message: ", ai_msg.content)
 
             # Check if the AI wants to use tools
             if ai_msg.tool_calls:
+                print("Tool Calls: ", ai_msg.tool_calls)
                 # Execute the tools
                 tool_results = []
                 for tool_call in ai_msg.tool_calls:
-                    if tool_call["name"] == "add_numbers":
-                        result = add_numbers.invoke(tool_call["args"])
+                    if tool_call["name"] == "add_numbers_tool":
+                        result = add_numbers_tool.invoke(tool_call["args"])
+                        tool_results.append(ToolMessage(
+                            content=str(result),
+                            tool_call_id=tool_call["id"]
+                        ))
+                    elif tool_call["name"] == "fetch_courses_tool":
+                        result = fetch_courses_tool.invoke(tool_call["args"])
+                        tool_results.append(ToolMessage(
+                            content=str(result),
+                            tool_call_id=tool_call["id"]
+                        ))
+                    elif tool_call["name"] == "enroll_tool":
+                        result = enroll_tool.invoke(tool_call["args"])
                         tool_results.append(ToolMessage(
                             content=str(result),
                             tool_call_id=tool_call["id"]
@@ -89,21 +109,43 @@ class AIService:
         messages.append(HumanMessage(content=message))
 
         try:
-            # First, check if the LLM wants to use tools (non-streaming decision)
+            # Use the LLM with tools for decision making (same as chat method)
             ai_msg = self.llm_with_tools.invoke(messages)
 
+            print("AI Message: ", ai_msg.content)
+            print("Tool Calls: ", ai_msg.tool_calls)
+
             if ai_msg.tool_calls:
-                # Execute tools and add results to messages
+                # Execute the tools
                 tool_results = []
                 for tool_call in ai_msg.tool_calls:
                     if tool_call["name"] == "add_numbers":
-                        result = add_numbers.invoke(tool_call["args"])
+                        result = add_numbers_tool.invoke(tool_call["args"])
+                        tool_results.append(ToolMessage(
+                            content=str(result),
+                            tool_call_id=tool_call["id"]
+                        ))
+                    elif tool_call["name"] == "fetch_all_courses":
+                        result = fetch_courses_tool.invoke(tool_call["args"])
+                        tool_results.append(ToolMessage(
+                            content=str(result),
+                            tool_call_id=tool_call["id"]
+                        ))
+                    elif tool_call["name"] == "enroll_into_course":
+                        result = enroll_tool.invoke(tool_call["args"])
+                        tool_results.append(ToolMessage(
+                            content=str(result),
+                            tool_call_id=tool_call["id"]
+                        ))
+                    elif tool_call["name"] == "search_course_information":
+                        result = search_course_information_tool.invoke(tool_call["args"])
+                        print("Result: ", result)
                         tool_results.append(ToolMessage(
                             content=str(result),
                             tool_call_id=tool_call["id"]
                         ))
 
-                # Add tool results to messages for final streaming response
+                # Add tool results to messages
                 messages.extend([ai_msg] + tool_results)
 
             # Stream the final response from LLM
