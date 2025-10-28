@@ -15,6 +15,15 @@ The Student Course Enrollment Portal is a comprehensive backend API that facilit
 - Frontend guide: [frontend/README.md](frontend/README.md)
 - AI module guide: [backend/src/ai/README.md](backend/src/ai/README.md)
 
+## Login Credentials
+
+- Admin:
+  - Email: admin@admin.com
+  - Password: admin
+- Student:
+  - Email: student@student.com
+  - Password: student
+
 ## Architecture
 
 The project follows a clean, layered architecture:
