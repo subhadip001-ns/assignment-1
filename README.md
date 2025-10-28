@@ -10,6 +10,20 @@ The Student Course Enrollment Portal is a comprehensive backend API that facilit
 - **Enrollment Management**: Many-to-many relationship handling between students and courses
 - **Association Queries**: Retrieve students per course and courses per student
 
+## Related READMEs
+
+- Frontend guide: [frontend/README.md](frontend/README.md)
+- AI module guide: [backend/src/ai/README.md](backend/src/ai/README.md)
+
+## Login Credentials
+
+- Admin:
+  - Email: admin@admin.com
+  - Password: admin
+- Student:
+  - Email: student@student.com
+  - Password: student
+
 ## Architecture
 
 The project follows a clean, layered architecture:
@@ -262,18 +276,36 @@ Check if the API is running:
 curl http://localhost:8000/health
 ```
 
-## What I Learnt from this Assignment
+## AI Integration
 
-- How to use FastAPI to create a RESTful API
-- How to use SQLAlchemy to interact with a PostgreSQL database
-- How to use Pydantic to validate data
-- How to use pytest to test the API
-- How to use curl to test the API
-- How to use Swagger UI to test the API
-- How to use ReDoc to test the API
+### RAG Service
 
-## Future Improvements
+The RAG service is used to search for course information. It uses the VoyageAI SDK to search for course information.
 
-- Add Authentication and Authorization
-- Add Logging
-- Few More
+```bash
+# To ingest the course documents
+uv run python -m pytest test/test_courses.py -v
+```
+
+### AI Service
+
+### Observability (Langfuse)
+
+- Add to your `.env`:
+
+### To run Langfuse use python 3.12
+
+```
+LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
+LANGFUSE_SECRET_KEY=your_langfuse_secret_key
+LANGFUSE_HOST=https://cloud.langfuse.com
+```
+uv run --python 3.12 python main.py
+
+```
+LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
+LANGFUSE_SECRET_KEY=your_langfuse_secret_key
+LANGFUSE_HOST=https://cloud.langfuse.com
+```
+
+Instrumentation is added to `ai_routes.py` to trace `/ai/chat` and `/ai/chat/stream` requests and record generations.

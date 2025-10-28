@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.db.postgres import init_db
-from src.routes import student_router, course_router, enrollment_router, auth_router
+from src.routes import student_router, course_router, enrollment_router, auth_router, ai_router
 
 
 @asynccontextmanager
@@ -39,6 +39,7 @@ app.include_router(auth_router)
 app.include_router(student_router)
 app.include_router(course_router)
 app.include_router(enrollment_router)
+app.include_router(ai_router)
 
 
 @app.get("/", tags=["root"])
