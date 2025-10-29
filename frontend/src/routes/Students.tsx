@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { studentsApi } from '@/lib/api'
-import { type Student } from '@/lib/types'
+import type { Student } from '@/lib/types'
 import { Edit, Trash2, Users } from 'lucide-react'
 
 export function Students() {

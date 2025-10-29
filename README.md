@@ -22,10 +22,22 @@ A full-stack educational platform with AI assistance for managing student enroll
 
 ## 🚀 Quick Start
 
-1. **Setup Database**: `docker compose up -d`
+### Option 1: Development Setup
+
+1. **Setup Database**: `cd backend && docker compose up -d`
 2. **Backend**: `cd backend && uv sync && python main.py`
 3. **Frontend**: `cd frontend && pnpm install && pnpm dev`
-4. **Seed Data**: `uv run seed.py`
+4. **Seed Data**: `cd backend && uv run seed.py`
+
+### Option 2: Docker Deployment
+
+1. **Environment Setup**: Copy `env.example` to `.env` and configure your variables
+2. **Build & Run**: `cd backend && docker compose up --build`
+3. **Access**:
+   - Frontend: http://localhost:4173
+   - Backend API: http://localhost:8000
+   - API Docs: http://localhost:8000/docs
+4. **Seed Data**: `cd backend && uv run seed.py` (run after containers are up)
 
 ## 🔑 Key Features
 

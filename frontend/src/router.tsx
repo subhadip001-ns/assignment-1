@@ -1,17 +1,18 @@
 import { createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/react-router'
-import { Dashboard } from './routes/Dashboard'
+import { Dashboard } from './routes/index'
 import { Students } from './routes/Students'
 import { Courses } from './routes/Courses'
 import { Enrollments } from './routes/Enrollments'
 import { Login } from './routes/Login'
 import { CourseBrowser } from './routes/CourseBrowser'
 import { AIChat } from './routes/AIChat'
-import { Layout } from './components/Layout'
+import { Layout } from './routes/_layout'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import { Root } from './routes/__root'
 
 // Create root route
 const rootRoute = createRootRoute({
-  component: () => <Outlet />,
+  component: Root,
 })
 
 // Create login route (public)

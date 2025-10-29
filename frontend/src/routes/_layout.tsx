@@ -1,11 +1,7 @@
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
+import { Link, Outlet } from '@tanstack/react-router'
 import { Users, BookOpen, UserCheck, Home } from 'lucide-react'
 
-export const Route = createFileRoute('/_layout')({
-  component: Layout,
-})
-
-function Layout() {
+export function Layout() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Header */}
