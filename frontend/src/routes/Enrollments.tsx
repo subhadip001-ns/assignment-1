@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { enrollmentsApi, studentsApi, coursesApi } from '@/lib/api'
-import { EnrollmentWithDetails, Student, Course } from '@/lib/types'
+import { type EnrollmentWithDetails, type Student, type Course } from '@/lib/types'
 import { Plus, Trash2, UserCheck } from 'lucide-react'
 
 export function Enrollments() {
