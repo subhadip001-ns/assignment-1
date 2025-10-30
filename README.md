@@ -70,4 +70,4 @@ A full-stack educational platform with AI assistance for managing student enroll
 - The Jenkins pipeline is configured to build the project, test the backend, and deploy the application.
 - The pipeline is configured to run on the day-4 branch.
 - The pipeline is configured to run on the Jenkins server.
-- v1.0.3
+- v1.0.4

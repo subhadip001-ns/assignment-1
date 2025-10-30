@@ -9,7 +9,7 @@ pipeline {
         stage('Test') {
             steps {
                 // Runs pytest in the backend service's test directory
-                sh 'docker compose run --rm backend uv run python -m pytest test/test_courses.py -v'
+                sh 'cd backend && cd test && docker compose run --rm backend uv run python -m pytest test_courses.py -v'
             }
         }
         stage('Deploy') {
