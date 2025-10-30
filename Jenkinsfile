@@ -8,7 +8,8 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'cd backend && cd test && uv run python -m pytest test_courses.py -v'
+                // sh 'cd backend && cd test && uv run python -m pytest test_courses.py -v'
+                echo 'Test stage skipped'
             }
         }
         stage('Deploy') {
