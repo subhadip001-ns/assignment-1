@@ -64,3 +64,10 @@ A full-stack educational platform with AI assistance for managing student enroll
 - Student:
   - Email: student@student.com
   - Password: student
+
+## Jenkins Pipeline
+
+- The Jenkins pipeline is configured to build the project, test the backend, and deploy the application.
+- The pipeline is configured to run on the day-4 branch.
+- The pipeline is configured to run on the Jenkins server.
+- v1.0.0
