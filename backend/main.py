@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from src.db.postgres import init_db
 from src.routes import student_router, course_router, enrollment_router, auth_router, ai_router, module_router
@@ -27,6 +28,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -34,6 +36,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add Prometheus metrics instrumentation
+Instrumentator().instrument(app).expose(app)
 
 app.include_router(auth_router)
 app.include_router(student_router)
