@@ -41,7 +41,7 @@ export interface LogoutResponse {
   };
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://3.84.148.0:8000';
 console.log(API_BASE_URL);
 
 const api = axios.create({
