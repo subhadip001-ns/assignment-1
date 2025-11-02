@@ -60,3 +60,27 @@ export interface CreateEnrollmentRequest {
   student_id: number;
   course_id: number;
 }
+
+export interface Module {
+  id: number;
+  course_id: number;
+  title: string;
+  description?: string;
+  content?: string;
+  order: number;
+}
+
+export interface CreateModuleRequest {
+  course_id: number;
+  title: string;
+  description?: string;
+  content?: string;
+  order?: number;
+}
+
+export interface UpdateModuleRequest {
+  title?: string;
+  description?: string;
+  content?: string;
+  order?: number;
+}

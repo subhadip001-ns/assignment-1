@@ -13,6 +13,7 @@ class Course(Base):
         description: Detailed course description
         instructor: Name of the course instructor
         enrollments: Relationship to Enrollment model
+        modules: Relationship to Module model
     """
     __tablename__ = "courses"
 
@@ -23,4 +24,7 @@ class Course(Base):
 
     # Relationship to enrollments (one course can have many enrollments)
     enrollments = relationship("Enrollment", back_populates="course", cascade="all, delete-orphan")
+    
+    # Relationship to modules (one course can have many modules)
+    modules = relationship("Module", back_populates="course", cascade="all, delete-orphan")
 

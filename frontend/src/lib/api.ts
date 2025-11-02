@@ -9,6 +9,9 @@ import type {
   CreateCourseRequest,
   UpdateCourseRequest,
   CreateEnrollmentRequest,
+  Module,
+  CreateModuleRequest,
+  UpdateModuleRequest,
 } from './types';
 
 export interface LoginRequest {
@@ -104,6 +107,16 @@ export const enrollmentsApi = {
   delete: (id: number) => api.delete(`/enrollments/${id}`),
   deleteByStudentAndCourse: (studentId: number, courseId: number) =>
     api.delete(`/enrollments/student/${studentId}/course/${courseId}`),
+};
+
+// Modules API
+export const modulesApi = {
+  getAll: () => api.get<Module[]>('/modules/'),
+  getById: (id: number) => api.get<Module>(`/modules/${id}`),
+  getByCourse: (courseId: number) => api.get<Module[]>(`/modules/course/${courseId}`),
+  create: (data: CreateModuleRequest) => api.post<Module>('/modules/', data),
+  update: (id: number, data: UpdateModuleRequest) => api.put<Module>(`/modules/${id}`, data),
+  delete: (id: number) => api.delete(`/modules/${id}`),
 };
 
 // Authentication API
