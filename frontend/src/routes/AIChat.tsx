@@ -191,7 +191,7 @@ export function AIChat() {
               <Button
                 onClick={handleSendMessage}
                 disabled={!inputMessage.trim() || isLoading}
-                className="px-4"
+                className="px-4 cursor-pointer"
               >
                 <Send className="w-4 h-4" />
               </Button>

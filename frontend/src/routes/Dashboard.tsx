@@ -122,7 +122,7 @@ export function Dashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <Link to="/courses">
-                  <Button className="w-full justify-start bg-blue-600 hover:bg-blue-700">
+                  <Button className="w-full justify-start bg-blue-600 hover:bg-blue-700 cursor-pointer text-white">
                     <Plus className="w-4 h-4 mr-2" />
                     Add New Course
                   </Button>
@@ -234,7 +234,7 @@ export function Dashboard() {
                 Start building your academic journey today!
               </p>
               <Link to="/browse-courses">
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white">
                   <GraduationCap className="w-4 h-4 mr-2" />
                   Browse All Courses
                 </Button>

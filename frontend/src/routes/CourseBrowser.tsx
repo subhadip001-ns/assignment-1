@@ -148,7 +148,7 @@ export function CourseBrowser() {
                       onClick={() => handleUnenroll(course.id)}
                       disabled={isProcessing}
                       variant="outline"
-                      className="flex-1 border-red-300 text-red-700 hover:bg-red-50"
+                      className="flex-1 border-red-300 text-red-700 hover:bg-red-50 cursor-pointer"
                     >
                       {isProcessing ? (
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -161,7 +161,7 @@ export function CourseBrowser() {
                     <Button
                       onClick={() => handleEnroll(course.id)}
                       disabled={isProcessing}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700"
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white"
                     >
                       {isProcessing ? (
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />

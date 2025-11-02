@@ -13,7 +13,14 @@ export function Courses() {
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [editingCourse, setEditingCourse] = useState<Course | null>(null)
   const [formData, setFormData] = useState<CreateCourseRequest>({
+    name: '',
+    description: '',
+    instructor: ''
+  })
+  const [editFormData, setEditFormData] = useState<CreateCourseRequest>({
     name: '',
     description: '',
     instructor: ''
@@ -57,6 +64,30 @@ export function Courses() {
     }
   }
 
+  const handleEditCourse = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingCourse) return
+
+    try {
+      await coursesApi.update(editingCourse.id, editFormData)
+      setIsEditDialogOpen(false)
+      setEditingCourse(null)
+      loadCourses()
+    } catch (error) {
+      console.error('Error updating course:', error)
+    }
+  }
+
+  const openEditDialog = (course: Course) => {
+    setEditingCourse(course)
+    setEditFormData({
+      name: course.name,
+      description: course.description || '',
+      instructor: course.instructor
+    })
+    setIsEditDialogOpen(true)
+  }
+
   if (loading) {
     return <div className="text-center">Loading...</div>
   }
@@ -67,12 +98,12 @@ export function Courses() {
         <h1 className="text-3xl font-bold text-gray-900">Courses</h1>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white">
               <Plus className="w-4 h-4 mr-2" />
               Add Course
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="bg-white">
             <DialogHeader>
               <DialogTitle>Add New Course</DialogTitle>
             </DialogHeader>
@@ -106,8 +137,50 @@ export function Courses() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                 Create Course
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="bg-white">
+            <DialogHeader>
+              <DialogTitle>Edit Course</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleEditCourse} className="space-y-4">
+              <div>
+                <Label htmlFor="edit-name">Course Name</Label>
+                <Input
+                  id="edit-name"
+                  type="text"
+                  value={editFormData.name}
+                  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-description">Description</Label>
+                <Textarea
+                  id="edit-description"
+                  value={editFormData.description}
+                  onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-instructor">Instructor</Label>
+                <Input
+                  id="edit-instructor"
+                  type="text"
+                  value={editFormData.instructor}
+                  onChange={(e) => setEditFormData({ ...editFormData, instructor: e.target.value })}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                Update Course
               </Button>
             </form>
           </DialogContent>
@@ -134,7 +207,8 @@ export function Courses() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+                  onClick={() => openEditDialog(course)}
+                  className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 cursor-pointer"
                 >
                   <Edit className="w-4 h-4 mr-1" />
                   Edit
@@ -143,7 +217,7 @@ export function Courses() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleDeleteCourse(course.id)}
-                  className="flex-1 border-red-300 text-red-700 hover:bg-red-50"
+                  className="flex-1 border-red-300 text-red-700 hover:bg-red-50 cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4 mr-1" />
                   Delete

@@ -21,7 +21,7 @@ export function Layout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
+              <div className="shrink-0 flex items-center">
                 <h1 className="text-xl font-bold text-gray-900">
                   Enrollment Portal
                 </h1>
@@ -90,7 +90,7 @@ export function Layout() {
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
-                className="flex items-center"
+                className="flex items-center cursor-pointer"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout

@@ -88,7 +88,7 @@ export function Login() {
                 <Button
                   onClick={() => handleLogin('student')}
                   disabled={isLoading}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer text-white"
                 >
                   {isLoading ? (
                     <>
@@ -138,7 +138,7 @@ export function Login() {
                 <Button
                   onClick={() => handleLogin('admin')}
                   disabled={isLoading}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer text-white"
                 >
                   {isLoading ? (
                     <>

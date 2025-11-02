@@ -71,7 +71,7 @@ export function Students() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleDeleteStudent(student.id)}
-                  className="flex-1 border-red-300 text-red-700 hover:bg-red-50"
+                  className="flex-1 border-red-300 text-red-700 hover:bg-red-50 cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4 mr-1" />
                   Delete

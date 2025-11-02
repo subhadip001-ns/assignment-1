@@ -76,12 +76,12 @@ export function Enrollments() {
         <h1 className="text-3xl font-bold text-gray-900">Enrollments</h1>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white">
               <Plus className="w-4 h-4 mr-2" />
               Enroll Student
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="bg-white">
             <DialogHeader>
               <DialogTitle>Enroll Student in Course</DialogTitle>
             </DialogHeader>
@@ -119,7 +119,7 @@ export function Enrollments() {
               <Button
                 onClick={handleCreateEnrollment}
                 disabled={!selectedStudentId || !selectedCourseId}
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer"
               >
                 Create Enrollment
               </Button>
@@ -155,7 +155,7 @@ export function Enrollments() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleDeleteEnrollment(enrollment.student.id, enrollment.course.id)}
-                  className="w-full border-red-300 text-red-700 hover:bg-red-50"
+                  className="w-full border-red-300 text-red-700 hover:bg-red-50 cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4 mr-1" />
                   Unenroll
