@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -7,20 +8,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { coursesApi } from '@/lib/api'
 import { type Course, type CreateCourseRequest } from '@/lib/types'
-import { Plus, Edit, Trash2, BookOpen } from 'lucide-react'
+import { Plus, Eye, BookOpen } from 'lucide-react'
 
 export function Courses() {
+  const navigate = useNavigate()
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [editingCourse, setEditingCourse] = useState<Course | null>(null)
   const [formData, setFormData] = useState<CreateCourseRequest>({
-    name: '',
-    description: '',
-    instructor: ''
-  })
-  const [editFormData, setEditFormData] = useState<CreateCourseRequest>({
     name: '',
     description: '',
     instructor: ''
@@ -53,39 +48,8 @@ export function Courses() {
     }
   }
 
-  const handleDeleteCourse = async (id: number) => {
-    if (confirm('Are you sure you want to delete this course?')) {
-      try {
-        await coursesApi.delete(id)
-        loadCourses()
-      } catch (error) {
-        console.error('Error deleting course:', error)
-      }
-    }
-  }
-
-  const handleEditCourse = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!editingCourse) return
-
-    try {
-      await coursesApi.update(editingCourse.id, editFormData)
-      setIsEditDialogOpen(false)
-      setEditingCourse(null)
-      loadCourses()
-    } catch (error) {
-      console.error('Error updating course:', error)
-    }
-  }
-
-  const openEditDialog = (course: Course) => {
-    setEditingCourse(course)
-    setEditFormData({
-      name: course.name,
-      description: course.description || '',
-      instructor: course.instructor
-    })
-    setIsEditDialogOpen(true)
+  const handleViewDetails = (courseId: number) => {
+    navigate({ to: `/courses/${courseId}` })
   }
 
   if (loading) {
@@ -143,48 +107,6 @@ export function Courses() {
             </form>
           </DialogContent>
         </Dialog>
-
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="bg-white">
-            <DialogHeader>
-              <DialogTitle>Edit Course</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleEditCourse} className="space-y-4">
-              <div>
-                <Label htmlFor="edit-name">Course Name</Label>
-                <Input
-                  id="edit-name"
-                  type="text"
-                  value={editFormData.name}
-                  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-description">Description</Label>
-                <Textarea
-                  id="edit-description"
-                  value={editFormData.description}
-                  onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
-                  rows={3}
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-instructor">Instructor</Label>
-                <Input
-                  id="edit-instructor"
-                  type="text"
-                  value={editFormData.instructor}
-                  onChange={(e) => setEditFormData({ ...editFormData, instructor: e.target.value })}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                Update Course
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -203,24 +125,15 @@ export function Courses() {
               {course.description && (
                 <p className="text-gray-600 mb-4">{course.description}</p>
               )}
-              <div className="flex space-x-2">
+              <div className="flex">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => openEditDialog(course)}
-                  className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 cursor-pointer"
+                  onClick={() => handleViewDetails(course.id)}
+                  className="w-full border-blue-300 text-blue-700 hover:bg-blue-50 cursor-pointer"
                 >
-                  <Edit className="w-4 h-4 mr-1" />
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDeleteCourse(course.id)}
-                  className="flex-1 border-red-300 text-red-700 hover:bg-red-50 cursor-pointer"
-                >
-                  <Trash2 className="w-4 h-4 mr-1" />
-                  Delete
+                  <Eye className="w-4 h-4 mr-1" />
+                  View Details
                 </Button>
               </div>
             </CardContent>

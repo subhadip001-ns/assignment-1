@@ -2,6 +2,7 @@ import { createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/re
 import { Dashboard } from './routes/Dashboard'
 import { Students } from './routes/Students'
 import { Courses } from './routes/Courses'
+import { CourseDetails } from './routes/CourseDetails'
 import { Enrollments } from './routes/Enrollments'
 import { Login } from './routes/Login'
 import { CourseBrowser } from './routes/CourseBrowser'
@@ -78,6 +79,13 @@ const coursesRoute = createRoute({
   component: Courses,
 })
 
+// Create course details route (admin only)
+const courseDetailsRoute = createRoute({
+  getParentRoute: () => adminRoutes,
+  path: '/courses/$courseId',
+  component: CourseDetails,
+})
+
 // Create enrollments route (admin only)
 const enrollmentsRoute = createRoute({
   getParentRoute: () => adminRoutes,
@@ -96,6 +104,7 @@ const routeTree = rootRoute.addChildren([
     adminRoutes.addChildren([
       studentsRoute,
       coursesRoute,
+      courseDetailsRoute,
       enrollmentsRoute,
     ]),
   ]),
