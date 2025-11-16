@@ -111,7 +111,7 @@ export function CourseBrowser() {
           const isProcessing = enrolling === course.id
 
           return (
-            <Card key={course.id} className="bg-white border border-gray-200 hover:shadow-lg transition-shadow">
+            <Card key={course.id} className="bg-white border border-gray-200">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

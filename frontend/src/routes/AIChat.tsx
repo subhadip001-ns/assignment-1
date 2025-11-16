@@ -143,7 +143,7 @@ export function AIChat() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] max-w-5xl mx-auto w-full">
+    <div className="flex flex-col h-[calc(100vh-8rem)] w-full">
       <div className="flex flex-col h-full">
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Messages Area */}
@@ -168,7 +168,7 @@ export function AIChat() {
                         <button
                           key={idx}
                           onClick={() => handleExampleClick(prompt.text)}
-                          className="group flex items-center gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-card hover:bg-accent transition-all text-left hover:shadow-sm"
+                          className="group flex items-center gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-card hover:bg-accent transition-all text-left"
                         >
                           <div className="p-2 rounded-md bg-primary/10 group-hover:bg-primary/20 transition-colors">
                             <Icon className="w-4 h-4 text-primary" />
@@ -199,7 +199,7 @@ export function AIChat() {
                     >
                       <Avatar
                         className={cn(
-                          'h-9 w-9 shrink-0 shadow-sm',
+                          'h-9 w-9 shrink-0',
                           isUser
                             ? 'bg-primary text-primary-foreground'
                             : 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'
@@ -217,7 +217,7 @@ export function AIChat() {
                       <div className={cn('flex flex-col gap-1.5 flex-1 min-w-0', isUser ? 'items-end' : 'items-start')}>
                         <div
                           className={cn(
-                            'relative group/message rounded-2xl px-4 py-3 shadow-sm max-w-[85%] sm:max-w-[75%]',
+                            'relative group/message rounded-2xl px-4 py-3 max-w-[85%] sm:max-w-[75%]',
                             isUser
                               ? 'bg-primary text-primary-foreground rounded-br-md'
                               : 'bg-muted text-foreground rounded-bl-md'
@@ -234,7 +234,7 @@ export function AIChat() {
                             <button
                               onClick={() => handleCopy(message.content, message.id)}
                               className={cn(
-                                'absolute -top-2 -right-2 opacity-0 group-hover/message:opacity-100 transition-opacity p-1.5 rounded-full bg-background border border-gray-200 dark:border-gray-800 shadow-sm hover:bg-accent',
+                                'absolute -top-2 -right-2 opacity-0 group-hover/message:opacity-100 transition-opacity p-1.5 rounded-full bg-background border border-gray-200 dark:border-gray-800 hover:bg-accent',
                                 isUser ? 'text-primary-foreground' : 'text-foreground'
                               )}
                               aria-label="Copy message"
@@ -258,13 +258,13 @@ export function AIChat() {
 
               {isStreaming && (
                 <div className="flex gap-4">
-                  <Avatar className="h-9 w-9 shrink-0 bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-sm">
+                  <Avatar className="h-9 w-9 shrink-0 bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
                     <AvatarFallback>
                       <Bot className="w-5 h-5" />
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col gap-1.5 flex-1">
-                    <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 shadow-sm inline-block">
+                    <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 inline-block">
                       <div className="flex items-center gap-1.5">
                         <div className="flex gap-1">
                           <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
