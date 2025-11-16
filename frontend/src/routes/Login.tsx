@@ -4,8 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useAuth, type UserRole } from '@/lib/auth'
+import { useAuth } from '@/lib/auth'
 import { GraduationCap, Shield, Loader2 } from 'lucide-react'
 
 export function Login() {
@@ -15,7 +14,7 @@ export function Login() {
   const { login, isLoading } = useAuth()
   const navigate = useNavigate()
 
-  const handleLogin = async (role: UserRole) => {
+  const handleLogin = async (role: 'student' | 'admin' = 'student') => {
     if (!email || !password) {
       setLoginError('Please fill in all fields')
       return
@@ -29,133 +28,156 @@ export function Login() {
     }
   }
 
+  const handleAdminQuickLogin = () => {
+    setEmail('admin@admin.com')
+    setPassword('admin')
+    setLoginError('')
+    // Auto-submit after setting values
+    setTimeout(() => {
+      handleLogin('admin')
+    }, 100)
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Student Course Enrollment
-          </h1>
-          <p className="text-gray-600">
-            Sign in to access your account
-          </p>
+    <div className="min-h-screen flex">
+      {/* Left Side - Background Image with Title */}
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8">
+        <div 
+          className="relative w-full h-full rounded-2xl bg-cover bg-center bg-no-repeat overflow-hidden"
+          style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1760841386196-32ab1aae90cc?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)'
+          }}
+        >
+          <div className="absolute inset-0 from-blue-900/80 to-indigo-900/60" />
+          <div className="relative z-10 flex flex-col justify-end items-start p-12 text-white h-full">
+            <div>
+              <h1 
+                className="text-6xl font-bold text-white leading-tight mb-4"
+                style={{ fontFamily: "'Instrument Serif', serif" }}
+              >
+                Student Course Enrollment Platform
+              </h1>
+              <p className="text-xl text-white/90 max-w-md">
+                Welcome to your academic journey. Manage courses, enrollments, and connect with your learning community.
+              </p>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <Tabs defaultValue="student" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="student" className="flex items-center gap-2">
-              <GraduationCap className="w-4 h-4" />
-              Student
-            </TabsTrigger>
-            <TabsTrigger value="admin" className="flex items-center gap-2">
-              <Shield className="w-4 h-4" />
-              Admin
-            </TabsTrigger>
-          </TabsList>
+      {/* Right Side - Login Form */}
+      <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8 lg:hidden">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <GraduationCap className="w-8 h-8 text-blue-600" />
+              <h1 className="text-3xl font-bold text-gray-900">Enrollment Portal</h1>
+            </div>
+            <p className="text-gray-600">Sign in to access your account</p>
+          </div>
 
-          <TabsContent value="student">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+          <Card className="border-gray-200 dark:border-gray-800 bg-white">
+            <CardHeader className="space-y-1 pb-6">
+              <CardTitle className="flex items-center gap-2 text-2xl font-semibold">
+                <div className="p-2 rounded-lg bg-blue-50">
                   <GraduationCap className="w-5 h-5 text-blue-600" />
-                  Student Login
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="student-email">Email</Label>
-                  <Input
-                    id="student-email"
-                    type="email"
-                    placeholder="student@university.edu"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
                 </div>
-                <div>
-                  <Label htmlFor="student-password">Password</Label>
-                  <Input
-                    id="student-password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                Welcome Back
+              </CardTitle>
+              <p className="text-sm text-muted-foreground mt-3">
+                Sign in to your account to continue
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium">
+                  Email Address
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="student@university.edu"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    setLoginError('')
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleLogin('student')
+                    }
+                  }}
+                  className="h-11"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    setLoginError('')
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleLogin('student')
+                    }
+                  }}
+                  className="h-11"
+                />
+              </div>
+              {loginError && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                  <p className="text-sm text-red-600 font-medium">{loginError}</p>
                 </div>
-                {loginError && (
-                  <p className="text-sm text-red-600">{loginError}</p>
+              )}
+              <Button
+                onClick={() => handleLogin('student')}
+                disabled={isLoading}
+                className="w-full h-11 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white font-medium text-base"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  <>
+                    <GraduationCap className="w-4 h-4 mr-2" />
+                    Sign in as Student
+                  </>
                 )}
-                <Button
-                  onClick={() => handleLogin('student')}
-                  disabled={isLoading}
-                  className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer text-white"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Signing in...
-                    </>
-                  ) : (
-                    'Sign in as Student'
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </Button>
 
-          <TabsContent value="admin">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-blue-600" />
-                  Admin Login
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="admin-email">Email</Label>
-                  <Input
-                    id="admin-email"
-                    type="email"
-                    placeholder="admin@university.edu"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200 dark:border-gray-800" />
                 </div>
-                <div>
-                  <Label htmlFor="admin-password">Password</Label>
-                  <Input
-                    id="admin-password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                <div className="relative flex justify-center text-xs uppercase tracking-wider">
+                  <span className="bg-white px-3 text-muted-foreground font-medium">Or continue with</span>
                 </div>
-                {loginError && (
-                  <p className="text-sm text-red-600">{loginError}</p>
-                )}
-                <Button
-                  onClick={() => handleLogin('admin')}
-                  disabled={isLoading}
-                  className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer text-white"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Signing in...
-                    </>
-                  ) : (
-                    'Sign in as Admin'
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+              </div>
 
-        <div className="text-center text-sm text-gray-600">
-          <p>Demo credentials: Any email/password will work</p>
+              <Button
+                onClick={handleAdminQuickLogin}
+                disabled={isLoading}
+                variant="outline"
+                className="w-full h-11 cursor-pointer font-medium"
+              >
+                <Shield className="w-4 h-4 mr-2" />
+                Sign in as Admin
+              </Button>
+
+              <p className="text-xs text-center text-muted-foreground mt-2">
+                Admin credentials will be auto-filled
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
