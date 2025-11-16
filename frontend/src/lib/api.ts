@@ -141,6 +141,14 @@ export interface ChatResponse {
   response: string
 }
 
+export interface ChatHistoryResponse {
+  messages: Array<{
+    role: string
+    content: string
+    timestamp: string
+  }>
+}
+
 export const aiApi = {
   // Regular chat (non-streaming)
   chat: (message: string, chatHistory?: ChatMessage[]) =>
@@ -212,4 +220,12 @@ export const aiApi = {
       }
     }
   },
+
+  // Get chat history
+  getChatHistory: () =>
+    api.get<ChatHistoryResponse>('/ai/chat/history'),
+
+  // Clear chat history
+  clearChatHistory: () =>
+    api.delete('/ai/chat/history'),
 };

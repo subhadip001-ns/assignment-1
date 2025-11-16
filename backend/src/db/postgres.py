@@ -36,7 +36,7 @@ def init_db():
     Initialize database tables.
     Creates all tables defined in models if they don't exist.
     """
-    from src.models import student, course, enrollment, module
+    from src.models import student, course, enrollment, module, chat_message
     
     print("Initializing database...")
     try:

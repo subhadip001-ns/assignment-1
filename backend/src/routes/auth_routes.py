@@ -21,15 +21,16 @@ router = APIRouter(
 )
 
 
-def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)) -> dict:
     """
-    Dependency to verify JWT token and return user info.
+    Dependency to verify JWT token and return full user info.
 
     Args:
         credentials: HTTP Bearer token credentials
+        db: Database session
 
     Returns:
-        Dict containing user information from token
+        Dict containing full user information: id, name, email, role
 
     Raises:
         HTTPException: If token is invalid or expired
@@ -50,7 +51,37 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)) 
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token payload"
             )
-        return {"user_id": int(user_id), "role": role}
+        
+        user_id_int = int(user_id)
+        
+        # Fetch full user info based on role
+        if role == "admin":
+            return {
+                "id": 1,
+                "name": "Administrator",
+                "email": "admin@admin.com",
+                "role": "admin"
+            }
+        elif role == "student":
+            # Fetch student from database
+            from src.models.student import Student
+            student = db.query(Student).filter(Student.id == user_id_int).first()
+            if not student:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="User not found"
+                )
+            return {
+                "id": student.id,
+                "name": student.name,
+                "email": student.email,
+                "role": "student"
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid role"
+            )
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -120,7 +151,4 @@ async def get_current_user(current_user: dict = Depends(verify_token)):
     Returns:
         Current user information
     """
-    return {
-        "user_id": current_user["user_id"],
-        "role": current_user["role"]
-    }
+    return current_user

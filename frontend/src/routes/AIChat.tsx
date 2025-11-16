@@ -12,6 +12,7 @@ import {
   BookOpen,
   MessageCircle,
   Wrench,
+  Trash2,
 } from 'lucide-react'
 import { aiApi } from '@/lib/api'
 import { cn } from '@/lib/utils'
@@ -37,6 +38,7 @@ export function AIChat() {
   const [isLoading, setIsLoading] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -47,6 +49,30 @@ export function AIChat() {
   useEffect(() => {
     scrollToBottom()
   }, [messages, isStreaming])
+
+  // Load chat history on mount
+  useEffect(() => {
+    const loadChatHistory = async () => {
+      try {
+        setIsLoadingHistory(true)
+        const response = await aiApi.getChatHistory()
+        const historyMessages: Message[] = response.data.messages.map((msg, idx) => ({
+          id: `history-${idx}-${Date.now()}`,
+          role: msg.role as 'user' | 'assistant',
+          content: msg.content,
+          timestamp: new Date(msg.timestamp)
+        }))
+        setMessages(historyMessages)
+      } catch (error) {
+        console.error('Failed to load chat history:', error)
+        // Don't show error to user, just start with empty chat
+      } finally {
+        setIsLoadingHistory(false)
+      }
+    }
+
+    loadChatHistory()
+  }, [])
 
   useEffect(() => {
     // Auto-resize textarea
@@ -84,9 +110,10 @@ export function AIChat() {
 
       setMessages(prev => [...prev, assistantMessage])
 
+      // Don't send chat_history - backend will fetch it automatically
       await aiApi.streamChat(
         messageToSend,
-        messages.map(msg => ({ role: msg.role, content: msg.content })),
+        [], // Backend will fetch chat history from database
         (chunk: string) => {
           setMessages(prev =>
             prev.map(msg =>
@@ -153,14 +180,53 @@ export function AIChat() {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
+  const handleClearChat = async () => {
+    if (!confirm('Are you sure you want to clear all chat history? This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      await aiApi.clearChatHistory()
+      setMessages([])
+    } catch (error) {
+      console.error('Failed to clear chat history:', error)
+      alert('Failed to clear chat history. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] w-full">
       <div className="flex flex-col h-full">
+        {/* Header with Clear Chat Button */}
+        {messages.length > 0 && !isLoadingHistory && (
+          <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-gray-800">
+            <h2 className="text-lg font-semibold">Chat</h2>
+            <button
+              onClick={handleClearChat}
+              disabled={isLoading}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Clear chat history"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Clear Chat</span>
+            </button>
+          </div>
+        )}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Messages Area */}
           <ScrollArea className="flex-1">
             <div className="p-6 space-y-6">
-              {messages.length === 0 ? (
+              {isLoadingHistory ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    <span>Loading chat history...</span>
+                  </div>
+                </div>
+              ) : messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 px-4">
                   <div className="relative mb-6">
                     <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />

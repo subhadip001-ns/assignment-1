@@ -4,7 +4,10 @@ from pydantic import BaseModel
 from typing import List, Optional
 import os
 from src.services.ai_service import AIService, ai_service
+from src.services.chat_service import ChatService
 from src.routes.auth_routes import verify_token
+from src.db.postgres import get_db
+from sqlalchemy.orm import Session
 # Prefer decorator-based API; fall back to no-op if unavailable
 try:  # Soft dependency to avoid runtime crash on incompatible envs
     from langfuse import observe  # type: ignore
@@ -27,6 +30,10 @@ class ChatResponse(BaseModel):
     response: str
 
 
+class ChatHistoryResponse(BaseModel):
+    messages: List[dict]
+
+
 router = APIRouter(
     prefix="/ai",
     tags=["ai"],
@@ -38,7 +45,8 @@ router = APIRouter(
 @_observe(name="ai.chat", as_type="generation")
 async def chat(
     request: ChatRequest,
-    current_user: dict = Depends(verify_token)
+    current_user: dict = Depends(verify_token),
+    db: Session = Depends(get_db)
 ) -> ChatResponse:
     """
     Non-streaming chat endpoint for AI agent interaction.
@@ -46,12 +54,30 @@ async def chat(
     Args:
         request: Chat request containing message and optional chat history
         current_user: Current authenticated user
+        db: Database session
 
     Returns:
         ChatResponse containing the AI response
     """
     try:
+        user_id = current_user["id"]
+        
+        # Save user message
+        ChatService.save_message(db, user_id, "user", request.message)
+        
+        # Get chat history from database if not provided
+        if not request.chat_history:
+            db_messages = ChatService.get_chat_history(db, user_id)
+            request.chat_history = [
+                {"role": msg.role, "content": msg.content}
+                for msg in db_messages
+            ]
+        
         response = ai_service.chat(request.message, request.chat_history)
+        
+        # Save assistant response
+        ChatService.save_message(db, user_id, "assistant", response)
+        
         return ChatResponse(response=response)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
@@ -61,7 +87,8 @@ async def chat(
 @_observe(name="ai.chat.stream", as_type="generation")
 async def chat_stream(
     request: ChatRequest,
-    current_user: dict = Depends(verify_token)
+    current_user: dict = Depends(verify_token),
+    db: Session = Depends(get_db)
 ):
     """
     Streaming chat endpoint for AI agent interaction.
@@ -69,10 +96,24 @@ async def chat_stream(
     Args:
         request: Chat request containing message and optional chat history
         current_user: Current authenticated user
+        db: Database session
 
     Returns:
         StreamingResponse with AI response chunks
     """
+    user_id = current_user["id"]
+    
+    # Save user message
+    ChatService.save_message(db, user_id, "user", request.message)
+    
+    # Get chat history from database if not provided
+    if not request.chat_history:
+        db_messages = ChatService.get_chat_history(db, user_id)
+        request.chat_history = [
+            {"role": msg.role, "content": msg.content}
+            for msg in db_messages
+        ]
+    
     streaming_service = AIService(is_streaming=True)
     try:
         def generate():
@@ -93,6 +134,12 @@ async def chat_stream(
                     buffer += err_msg
                     yield f"data: {err_msg}\n\n"
             finally:
+                # Save assistant response after streaming completes
+                if buffer:
+                    try:
+                        ChatService.save_message(db, user_id, "assistant", buffer)
+                    except Exception as save_err:
+                        print(f"Failed to save chat message: {save_err}")
                 yield "data: [DONE]\n\n"
 
         return StreamingResponse(
@@ -110,3 +157,59 @@ async def chat_stream(
             media_type="text/event-stream",
             headers={"Cache-Control": "no-cache", "Connection": "keep-alive"}
         )
+
+
+@router.get("/chat/history", response_model=ChatHistoryResponse)
+async def get_chat_history(
+    current_user: dict = Depends(verify_token),
+    db: Session = Depends(get_db)
+) -> ChatHistoryResponse:
+    """
+    Get chat history for the current user.
+
+    Args:
+        current_user: Current authenticated user
+        db: Database session
+
+    Returns:
+        ChatHistoryResponse containing list of messages
+    """
+    try:
+        user_id = current_user["id"]
+        messages = ChatService.get_chat_history(db, user_id)
+        
+        return ChatHistoryResponse(
+            messages=[
+                {
+                    "role": msg.role,
+                    "content": msg.content,
+                    "timestamp": msg.created_at.isoformat()
+                }
+                for msg in messages
+            ]
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve chat history: {str(e)}")
+
+
+@router.delete("/chat/history")
+async def clear_chat_history(
+    current_user: dict = Depends(verify_token),
+    db: Session = Depends(get_db)
+):
+    """
+    Clear chat history for the current user.
+
+    Args:
+        current_user: Current authenticated user
+        db: Database session
+
+    Returns:
+        Success message
+    """
+    try:
+        user_id = current_user["id"]
+        ChatService.clear_chat_history(db, user_id)
+        return {"message": "Chat history cleared successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to clear chat history: {str(e)}")
