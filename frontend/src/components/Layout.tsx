@@ -1,11 +1,36 @@
-import { Link, Outlet, useNavigate } from '@tanstack/react-router'
-import { Users, BookOpen, UserCheck, Home, LogOut, User, GraduationCap, MessageSquare } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Link, Outlet, useNavigate, useLocation } from '@tanstack/react-router'
+import {
+  Users,
+  BookOpen,
+  UserCheck,
+  Home,
+  LogOut,
+  GraduationCap,
+  MessageSquare,
+} from 'lucide-react'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarSeparator,
+  SidebarTrigger,
+} from '@/components/ui/sidebar'
 import { useAuth } from '@/lib/auth'
 
 export function Layout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleLogout = () => {
     logout()
@@ -14,96 +39,144 @@ export function Layout() {
 
   const isAdmin = user?.role === 'admin'
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation Header */}
-      <nav className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="shrink-0 flex items-center">
-                <h1 className="text-xl font-bold text-gray-900">
-                  Enrollment Portal
-                </h1>
-              </div>
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <Link
-                  to="/"
-                  className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                >
-                  <Home className="w-4 h-4 mr-2" />
-                  Dashboard
-                </Link>
-                {!isAdmin && (
-                  <Link
-                    to="/browse-courses"
-                    className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  >
-                    <GraduationCap className="w-4 h-4 mr-2" />
-                    Browse Courses
-                  </Link>
-                )}
-                <Link
-                  to="/ai-chat"
-                  className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  AI Chat
-                </Link>
-                {isAdmin && (
-                  <>
-                    <Link
-                      to="/students"
-                      className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    >
-                      <Users className="w-4 h-4 mr-2" />
-                      Students
-                    </Link>
-                    <Link
-                      to="/courses"
-                      className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    >
-                      <BookOpen className="w-4 h-4 mr-2" />
-                      Courses
-                    </Link>
-                    <Link
-                      to="/enrollments"
-                      className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    >
-                      <UserCheck className="w-4 h-4 mr-2" />
-                      Enrollments
-                    </Link>
-                  </>
-                )}
-              </div>
-            </div>
+  const isActive = (path: string) => {
+    return location.pathname === path
+  }
 
-            {/* User menu */}
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <User className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-700">
-                  {user?.name} ({user?.role})
-                </span>
-              </div>
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                size="sm"
-                className="flex items-center cursor-pointer"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
+
+  const navLinks = [
+    {
+      to: '/',
+      icon: Home,
+      label: 'Dashboard',
+      show: true,
+    },
+    {
+      to: '/browse-courses',
+      icon: GraduationCap,
+      label: 'Browse Courses',
+      show: !isAdmin,
+    },
+    {
+      to: '/ai-chat',
+      icon: MessageSquare,
+      label: 'AI Chat',
+      show: true,
+    },
+    {
+      to: '/students',
+      icon: Users,
+      label: 'Students',
+      show: isAdmin,
+    },
+    {
+      to: '/courses',
+      icon: BookOpen,
+      label: 'Courses',
+      show: isAdmin,
+    },
+    {
+      to: '/enrollments',
+      icon: UserCheck,
+      label: 'Enrollments',
+      show: isAdmin,
+    },
+  ]
+
+  const filteredLinks = navLinks.filter((link) => link.show)
+
+  return (
+    <SidebarProvider>
+      <Sidebar className=''>
+        <SidebarHeader>
+          <div className="flex items-center gap-2 px-2 py-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <GraduationCap className="h-4 w-4" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold">Enrollment Portal</span>
+              <span className="text-xs text-muted-foreground">
+                {isAdmin ? 'Admin' : 'Student'}
+              </span>
             </div>
           </div>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {filteredLinks.map((link) => {
+                  const Icon = link.icon
+                  const active = isActive(link.to)
+                  return (
+                    <SidebarMenuItem key={link.to}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={active}
+                        tooltip={link.label}
+                      >
+                        <Link to={link.to}>
+                          <Icon />
+                          <span>{link.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <div className="flex items-center gap-2 px-2 py-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    {user?.name ? getInitials(user.name) : 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-sm font-medium truncate">
+                    {user?.name || 'User'}
+                  </span>
+                  <span className="text-xs text-muted-foreground truncate">
+                    {user?.role || 'student'}
+                  </span>
+                </div>
+              </div>
+            </SidebarMenuItem>
+            <SidebarSeparator />
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={handleLogout}
+                tooltip="Logout"
+                className="w-full"
+              >
+                <LogOut />
+                <span>Logout</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      </Sidebar>
+      <SidebarInset>
+        <header className="flex shrink-0 items-center gap-2 px-4 py-2">
+          <SidebarTrigger className="-ml-1 cursor-pointer" />
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
+          <Outlet />
         </div>
-      </nav>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Outlet />
-      </main>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

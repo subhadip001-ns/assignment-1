@@ -13,33 +13,33 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  backend:
-    build:
-      context: backend
-      dockerfile: Dockerfile
-    container_name: student_course_backend
-    restart: always
-    environment:
-      - POSTGRES_PASSWORD=postgrespass
-      - POSTGRES_DB=student_course_enrollment_db
-      - DATABASE_URL=postgresql://postgres:postgrespass@localhost:5432/student_course_enrollment_db
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    volumes:
-      - ./data:/app/data
+  # backend:
+  #   build:
+  #     context: backend
+  #     dockerfile: Dockerfile
+  #   container_name: student_course_backend
+  #   restart: always
+  #   environment:
+  #     - POSTGRES_PASSWORD=postgrespass
+  #     - POSTGRES_DB=student_course_enrollment_db
+  #     - DATABASE_URL=postgresql://postgres:postgrespass@localhost:5432/student_course_enrollment_db
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - ./data:/app/data
 
-  frontend:
-    build:
-      context: frontend
-      dockerfile: Dockerfile
-    container_name: student_course_frontend
-    restart: always
-    ports:
-      - "4173:4173"
-    depends_on:
-      - backend
+  # frontend:
+  #   build:
+  #     context: frontend
+  #     dockerfile: Dockerfile
+  #   container_name: student_course_frontend
+  #   restart: always
+  #   ports:
+  #     - "4173:4173"
+  #   depends_on:
+  #     - backend
 
 volumes:
   pgdata:
