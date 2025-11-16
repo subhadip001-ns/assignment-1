@@ -98,9 +98,14 @@ export function CourseBrowser() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Browse Courses</h1>
-        <p className="text-gray-600">
+      <div className="mb-10">
+        <h1 
+          className="text-4xl font-bold text-gray-900 mb-2"
+          style={{ fontFamily: "'Instrument Serif', serif" }}
+        >
+          Browse Courses
+        </h1>
+        <p className="text-gray-600 text-lg">
           Explore available courses and manage your enrollments. Click "Enroll" to join a course or "Unenroll" to drop one.
         </p>
       </div>
@@ -113,65 +118,56 @@ export function CourseBrowser() {
           return (
             <Card key={course.id} className="bg-white border border-gray-200">
               <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="flex items-center gap-2 mb-2">
-                      <BookOpen className="w-5 h-5 text-blue-600" />
-                      {course.name}
-                    </CardTitle>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Users className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm text-gray-600">by {course.instructor}</span>
-                    </div>
-                    {enrolled ? (
-                      <Badge variant="secondary" className="flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" />
-                        Enrolled
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        <GraduationCap className="w-3 h-3" />
-                        Available
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {course.description && (
-                  <p className="text-gray-600 mb-4 text-sm">{course.description}</p>
-                )}
-
-                <div className="flex gap-2">
+                <CardTitle className="text-lg font-semibold text-gray-900 mb-3">
+                  {course.name}
+                </CardTitle>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600">by {course.instructor}</p>
                   {enrolled ? (
-                    <Button
-                      onClick={() => handleUnenroll(course.id)}
-                      disabled={isProcessing}
-                      variant="outline"
-                      className="flex-1 border-red-300 text-red-700 hover:bg-red-50 cursor-pointer"
-                    >
-                      {isProcessing ? (
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      ) : (
-                        <XCircle className="w-4 h-4 mr-2" />
-                      )}
-                      {isProcessing ? 'Unenrolling...' : 'Unenroll'}
-                    </Button>
+                    <Badge variant="secondary" className="bg-gray-100 text-gray-700">
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      Enrolled
+                    </Badge>
                   ) : (
-                    <Button
-                      onClick={() => handleEnroll(course.id)}
-                      disabled={isProcessing}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white"
-                    >
-                      {isProcessing ? (
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      ) : (
-                        <GraduationCap className="w-4 h-4 mr-2" />
-                      )}
-                      {isProcessing ? 'Enrolling...' : 'Enroll'}
-                    </Button>
+                    <Badge variant="outline" className="border-gray-300">
+                      <GraduationCap className="w-3 h-3 mr-1" />
+                      Available
+                    </Badge>
                   )}
                 </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {course.description && (
+                  <p className="text-sm text-gray-600">{course.description}</p>
+                )}
+
+                {enrolled ? (
+                  <Button
+                    onClick={() => handleUnenroll(course.id)}
+                    disabled={isProcessing}
+                    className="w-full bg-red-50 hover:bg-red-100 text-red-600 border-none cursor-pointer h-11 disabled:opacity-50"
+                  >
+                    {isProcessing ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <XCircle className="w-4 h-4 mr-2" />
+                    )}
+                    {isProcessing ? 'Unenrolling...' : 'Unenroll'}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handleEnroll(course.id)}
+                    disabled={isProcessing}
+                    className="w-full bg-gray-900 hover:bg-gray-800 cursor-pointer text-white h-11"
+                  >
+                    {isProcessing ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <GraduationCap className="w-4 h-4 mr-2" />
+                    )}
+                    {isProcessing ? 'Enrolling...' : 'Enroll'}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )

@@ -58,11 +58,19 @@ export function Courses() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Courses</h1>
+      <div className="flex justify-between items-center mb-10">
+        <div>
+          <h1 
+            className="text-4xl font-bold text-gray-900 mb-2"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
+          >
+            Courses
+          </h1>
+          <p className="text-gray-600">Manage all courses in the system</p>
+        </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white">
+            <Button className="bg-gray-900 hover:bg-gray-800 cursor-pointer text-white h-11">
               <Plus className="w-4 h-4 mr-2" />
               Add Course
             </Button>
@@ -71,37 +79,40 @@ export function Courses() {
             <DialogHeader>
               <DialogTitle>Add New Course</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleCreateCourse} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Course Name</Label>
+            <form onSubmit={handleCreateCourse} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-medium text-gray-900">Course Name</Label>
                 <Input
                   id="name"
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
+                  className="h-11"
                 />
               </div>
-              <div>
-                <Label htmlFor="description">Description</Label>
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-sm font-medium text-gray-900">Description</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
+                  className="min-h-[80px]"
                 />
               </div>
-              <div>
-                <Label htmlFor="instructor">Instructor</Label>
+              <div className="space-y-2">
+                <Label htmlFor="instructor" className="text-sm font-medium text-gray-900">Instructor</Label>
                 <Input
                   id="instructor"
                   type="text"
                   value={formData.instructor}
                   onChange={(e) => setFormData({ ...formData, instructor: e.target.value })}
                   required
+                  className="h-11"
                 />
               </div>
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              <Button type="submit" className="w-full bg-gray-900 hover:bg-gray-800 text-white h-11 cursor-pointer">
                 Create Course
               </Button>
             </form>
@@ -113,29 +124,26 @@ export function Courses() {
         {courses.map((course) => (
           <Card key={course.id} className="bg-white border border-gray-200">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <BookOpen className="w-5 h-5 mr-2 text-blue-600" />
+              <CardTitle className="text-lg font-semibold text-gray-900">
                 {course.name}
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-2">
-                <span className="font-medium">Instructor:</span> {course.instructor}
-              </p>
-              {course.description && (
-                <p className="text-gray-600 mb-4">{course.description}</p>
-              )}
-              <div className="flex">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleViewDetails(course.id)}
-                  className="w-full border-blue-300 text-blue-700 hover:bg-blue-50 cursor-pointer"
-                >
-                  <Eye className="w-4 h-4 mr-1" />
-                  View Details
-                </Button>
+            <CardContent className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Instructor</p>
+                <p className="font-medium text-gray-900">{course.instructor}</p>
               </div>
+              {course.description && (
+                <p className="text-sm text-gray-600">{course.description}</p>
+              )}
+              <Button
+                variant="outline"
+                onClick={() => handleViewDetails(course.id)}
+                className="w-full border-gray-200 dark:border-gray-800 hover:bg-gray-50 cursor-pointer h-10"
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                View Details
+              </Button>
             </CardContent>
           </Card>
         ))}

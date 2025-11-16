@@ -167,46 +167,48 @@ export function CourseDetails() {
   return (
     <div>
       {/* Header with back button */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="mb-10">
         <Button
           variant="outline"
           onClick={() => navigate({ to: '/courses' })}
-          className="flex items-center gap-2 cursor-pointer"
+          className="mb-6 border-gray-200 dark:border-gray-800 hover:bg-gray-50 cursor-pointer"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Courses
         </Button>
-        <h1 className="text-3xl font-bold text-gray-900">Course Details</h1>
+        <h1 
+          className="text-4xl font-bold text-gray-900 mb-2"
+          style={{ fontFamily: "'Instrument Serif', serif" }}
+        >
+          Course Details
+        </h1>
       </div>
 
       {/* Course Information Card */}
-      <Card className="mb-6 bg-white border border-gray-200">
+      <Card className="mb-8 bg-white border border-gray-200">
         <CardHeader>
-          <CardTitle className="flex items-center gap-3">
-            <BookOpen className="w-6 h-6 text-blue-600" />
-            <div>
-              <h2 className="text-2xl">{course.name}</h2>
-              <p className="text-gray-600">Course ID: {course.id}</p>
-            </div>
+          <CardTitle className="text-2xl font-semibold text-gray-900">
+            {course.name}
           </CardTitle>
+          <p className="text-sm text-gray-600 mt-1">Course ID: {course.id}</p>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-5">
           <div>
-            <Label className="text-sm font-medium text-gray-700">Instructor</Label>
-            <p className="text-lg">{course.instructor}</p>
+            <Label className="text-sm font-medium text-gray-600 mb-1 block">Instructor</Label>
+            <p className="text-lg font-medium text-gray-900">{course.instructor}</p>
           </div>
           {course.description && (
             <div>
-              <Label className="text-sm font-medium text-gray-700">Description</Label>
-              <p className="text-gray-700 mt-1">{course.description}</p>
+              <Label className="text-sm font-medium text-gray-600 mb-1 block">Description</Label>
+              <p className="text-gray-700">{course.description}</p>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-2">
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white">
+                <Button className="bg-gray-900 hover:bg-gray-800 cursor-pointer text-white h-11">
                   <Edit className="w-4 h-4 mr-2" />
                   Edit Course
                 </Button>
@@ -215,37 +217,40 @@ export function CourseDetails() {
                 <DialogHeader>
                   <DialogTitle>Edit Course</DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleEditCourse} className="space-y-4">
-                  <div>
-                    <Label htmlFor="edit-name">Course Name</Label>
+                <form onSubmit={handleEditCourse} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-name" className="text-sm font-medium text-gray-900">Course Name</Label>
                     <Input
                       id="edit-name"
                       type="text"
                       value={editFormData.name}
                       onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
                       required
+                      className="h-11"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="edit-description">Description</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-description" className="text-sm font-medium text-gray-900">Description</Label>
                     <Textarea
                       id="edit-description"
                       value={editFormData.description}
                       onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
                       rows={3}
+                      className="min-h-[80px]"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="edit-instructor">Instructor</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-instructor" className="text-sm font-medium text-gray-900">Instructor</Label>
                     <Input
                       id="edit-instructor"
                       type="text"
                       value={editFormData.instructor}
                       onChange={(e) => setEditFormData({ ...editFormData, instructor: e.target.value })}
                       required
+                      className="h-11"
                     />
                   </div>
-                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  <Button type="submit" className="w-full bg-gray-900 hover:bg-gray-800 text-white h-11 cursor-pointer">
                     Update Course
                   </Button>
                 </form>
@@ -253,9 +258,8 @@ export function CourseDetails() {
             </Dialog>
 
             <Button
-              variant="outline"
               onClick={handleDeleteCourse}
-              className="border-red-300 text-red-700 hover:bg-red-50 cursor-pointer"
+              className="bg-red-50 hover:bg-red-100 text-red-600 border-none cursor-pointer h-11"
             >
               <Trash2 className="w-4 h-4 mr-2" />
               Delete Course
@@ -265,19 +269,16 @@ export function CourseDetails() {
       </Card>
 
       {/* Modules Card */}
-      <Card className="mb-6 bg-white border border-gray-200">
+      <Card className="mb-8 bg-white border border-gray-200">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-3">
-              <FileText className="w-6 h-6 text-purple-600" />
-              <div>
-                <h3 className="text-xl">Course Modules</h3>
-                <p className="text-sm text-gray-600">{modules.length} module{modules.length !== 1 ? 's' : ''}</p>
-              </div>
-            </CardTitle>
+            <div>
+              <CardTitle className="text-xl font-semibold text-gray-900">Course Modules</CardTitle>
+              <p className="text-sm text-gray-600 mt-1">{modules.length} module{modules.length !== 1 ? 's' : ''}</p>
+            </div>
             <Dialog open={isCreateModuleDialogOpen} onOpenChange={setIsCreateModuleDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white">
+                <Button className="bg-gray-900 hover:bg-gray-800 cursor-pointer text-white h-11">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Module
                 </Button>
@@ -286,47 +287,51 @@ export function CourseDetails() {
                 <DialogHeader>
                   <DialogTitle>Add New Module</DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleCreateModule} className="space-y-4">
-                  <div>
-                    <Label htmlFor="module-title">Module Title</Label>
+                <form onSubmit={handleCreateModule} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="module-title" className="text-sm font-medium text-gray-900">Module Title</Label>
                     <Input
                       id="module-title"
                       type="text"
                       value={moduleFormData.title}
                       onChange={(e) => setModuleFormData({ ...moduleFormData, title: e.target.value })}
                       required
+                      className="h-11"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="module-description">Description</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="module-description" className="text-sm font-medium text-gray-900">Description</Label>
                     <Textarea
                       id="module-description"
                       value={moduleFormData.description}
                       onChange={(e) => setModuleFormData({ ...moduleFormData, description: e.target.value })}
                       rows={2}
+                      className="min-h-[60px]"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="module-content">Content</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="module-content" className="text-sm font-medium text-gray-900">Content</Label>
                     <Textarea
                       id="module-content"
                       value={moduleFormData.content}
                       onChange={(e) => setModuleFormData({ ...moduleFormData, content: e.target.value })}
                       rows={4}
                       placeholder="Module content, instructions, or materials..."
+                      className="min-h-[100px]"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="module-order">Order</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="module-order" className="text-sm font-medium text-gray-900">Order</Label>
                     <Input
                       id="module-order"
                       type="number"
                       min="0"
                       value={moduleFormData.order}
                       onChange={(e) => setModuleFormData({ ...moduleFormData, order: parseInt(e.target.value) || 0 })}
+                      className="h-11"
                     />
                   </div>
-                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  <Button type="submit" className="w-full bg-gray-900 hover:bg-gray-800 text-white h-11 cursor-pointer">
                     Create Module
                   </Button>
                 </form>
@@ -362,15 +367,14 @@ export function CourseDetails() {
                           variant="outline"
                           size="sm"
                           onClick={() => openEditModuleDialog(module)}
-                          className="cursor-pointer"
+                          className="cursor-pointer border-gray-200 dark:border-gray-800 hover:bg-gray-50"
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button
-                          variant="outline"
                           size="sm"
                           onClick={() => handleDeleteModule(module.id)}
-                          className="border-red-300 text-red-700 hover:bg-red-50 cursor-pointer"
+                          className="bg-red-50 hover:bg-red-100 text-red-600 border-none cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -396,47 +400,51 @@ export function CourseDetails() {
           <DialogHeader>
             <DialogTitle>Edit Module</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleEditModule} className="space-y-4">
-            <div>
-              <Label htmlFor="edit-module-title">Module Title</Label>
+          <form onSubmit={handleEditModule} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="edit-module-title" className="text-sm font-medium text-gray-900">Module Title</Label>
               <Input
                 id="edit-module-title"
                 type="text"
                 value={moduleFormData.title}
                 onChange={(e) => setModuleFormData({ ...moduleFormData, title: e.target.value })}
                 required
+                className="h-11"
               />
             </div>
-            <div>
-              <Label htmlFor="edit-module-description">Description</Label>
+            <div className="space-y-2">
+              <Label htmlFor="edit-module-description" className="text-sm font-medium text-gray-900">Description</Label>
               <Textarea
                 id="edit-module-description"
                 value={moduleFormData.description}
                 onChange={(e) => setModuleFormData({ ...moduleFormData, description: e.target.value })}
                 rows={2}
+                className="min-h-[60px]"
               />
             </div>
-            <div>
-              <Label htmlFor="edit-module-content">Content</Label>
+            <div className="space-y-2">
+              <Label htmlFor="edit-module-content" className="text-sm font-medium text-gray-900">Content</Label>
               <Textarea
                 id="edit-module-content"
                 value={moduleFormData.content}
                 onChange={(e) => setModuleFormData({ ...moduleFormData, content: e.target.value })}
                 rows={4}
                 placeholder="Module content, instructions, or materials..."
+                className="min-h-[100px]"
               />
             </div>
-            <div>
-              <Label htmlFor="edit-module-order">Order</Label>
+            <div className="space-y-2">
+              <Label htmlFor="edit-module-order" className="text-sm font-medium text-gray-900">Order</Label>
               <Input
                 id="edit-module-order"
                 type="number"
                 min="0"
                 value={moduleFormData.order}
                 onChange={(e) => setModuleFormData({ ...moduleFormData, order: parseInt(e.target.value) || 0 })}
+                className="h-11"
               />
             </div>
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+            <Button type="submit" className="w-full bg-gray-900 hover:bg-gray-800 text-white h-11 cursor-pointer">
               Update Module
             </Button>
           </form>
@@ -446,25 +454,19 @@ export function CourseDetails() {
       {/* Enrolled Students Card */}
       <Card className="bg-white border border-gray-200">
         <CardHeader>
-          <CardTitle className="flex items-center gap-3">
-            <Users className="w-6 h-6 text-green-600" />
-            <div>
-              <h3 className="text-xl">Enrolled Students</h3>
-              <p className="text-sm text-gray-600">{students.length} student{students.length !== 1 ? 's' : ''} enrolled</p>
-            </div>
-          </CardTitle>
+          <div>
+            <CardTitle className="text-xl font-semibold text-gray-900">Enrolled Students</CardTitle>
+            <p className="text-sm text-gray-600 mt-1">{students.length} student{students.length !== 1 ? 's' : ''} enrolled</p>
+          </div>
         </CardHeader>
         <CardContent>
           {students.length > 0 ? (
             <div className="grid gap-3">
               {students.map((student) => (
-                <div key={student.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <GraduationCap className="w-5 h-5 text-blue-600" />
-                    <div>
-                      <p className="font-medium">{student.name}</p>
-                      <p className="text-sm text-gray-600">{student.email}</p>
-                    </div>
+                <div key={student.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-900">{student.name}</p>
+                    <p className="text-sm text-gray-600 mt-1">{student.email}</p>
                   </div>
                 </div>
               ))}

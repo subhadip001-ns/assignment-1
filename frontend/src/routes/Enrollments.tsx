@@ -72,11 +72,19 @@ export function Enrollments() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Enrollments</h1>
+      <div className="flex justify-between items-center mb-10">
+        <div>
+          <h1 
+            className="text-4xl font-bold text-gray-900 mb-2"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
+          >
+            Enrollments
+          </h1>
+          <p className="text-gray-600">Manage student course enrollments</p>
+        </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white">
+            <Button className="bg-gray-900 hover:bg-gray-800 cursor-pointer text-white h-11">
               <Plus className="w-4 h-4 mr-2" />
               Enroll Student
             </Button>
@@ -85,11 +93,11 @@ export function Enrollments() {
             <DialogHeader>
               <DialogTitle>Enroll Student in Course</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Student</label>
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-900">Student</label>
                 <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11">
                     <SelectValue placeholder="Select a student" />
                   </SelectTrigger>
                   <SelectContent>
@@ -101,10 +109,10 @@ export function Enrollments() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Course</label>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-900">Course</label>
                 <Select value={selectedCourseId} onValueChange={setSelectedCourseId}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11">
                     <SelectValue placeholder="Select a course" />
                   </SelectTrigger>
                   <SelectContent>
@@ -119,7 +127,7 @@ export function Enrollments() {
               <Button
                 onClick={handleCreateEnrollment}
                 disabled={!selectedStudentId || !selectedCourseId}
-                className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                className="w-full bg-gray-900 hover:bg-gray-800 cursor-pointer text-white h-11"
               >
                 Create Enrollment
               </Button>
@@ -132,35 +140,30 @@ export function Enrollments() {
         {enrollments.map((enrollment) => (
           <Card key={enrollment.id} className="bg-white border border-gray-200">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <UserCheck className="w-5 h-5 mr-2 text-blue-600" />
+              <CardTitle className="text-lg font-semibold text-gray-900">
                 Enrollment #{enrollment.id}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div>
-                  <p className="font-medium text-gray-900">Student:</p>
-                  <p className="text-gray-600">{enrollment.student.name}</p>
-                  <p className="text-sm text-gray-500">{enrollment.student.email}</p>
+                  <p className="text-xs text-gray-600 mb-1">Student</p>
+                  <p className="font-medium text-gray-900">{enrollment.student.name}</p>
+                  <p className="text-sm text-gray-600">{enrollment.student.email}</p>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Course:</p>
-                  <p className="text-gray-600">{enrollment.course.name}</p>
-                  <p className="text-sm text-gray-500">by {enrollment.course.instructor}</p>
+                  <p className="text-xs text-gray-600 mb-1">Course</p>
+                  <p className="font-medium text-gray-900">{enrollment.course.name}</p>
+                  <p className="text-sm text-gray-600">by {enrollment.course.instructor}</p>
                 </div>
               </div>
-              <div className="mt-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDeleteEnrollment(enrollment.student.id, enrollment.course.id)}
-                  className="w-full border-red-300 text-red-700 hover:bg-red-50 cursor-pointer"
-                >
-                  <Trash2 className="w-4 h-4 mr-1" />
-                  Unenroll
-                </Button>
-              </div>
+              <Button
+                onClick={() => handleDeleteEnrollment(enrollment.student.id, enrollment.course.id)}
+                className="w-full bg-red-50 hover:bg-red-100 text-red-600 border-none cursor-pointer h-10"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Unenroll
+              </Button>
             </CardContent>
           </Card>
         ))}

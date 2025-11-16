@@ -42,36 +42,38 @@ export function Students() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Students</h1>
-        <p className="text-gray-600 mt-2">View and manage all registered students</p>
+      <div className="mb-10">
+        <h1 
+          className="text-4xl font-bold text-gray-900 mb-2"
+          style={{ fontFamily: "'Instrument Serif', serif" }}
+        >
+          Students
+        </h1>
+        <p className="text-gray-600 text-lg">View and manage all registered students</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {students.map((student) => (
           <Card key={student.id} className="bg-white border border-gray-200">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Users className="w-5 h-5 mr-2 text-blue-600" />
+              <CardTitle className="text-lg font-semibold text-gray-900">
                 {student.name}
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-4">{student.email}</p>
-              <div className="flex space-x-2">
+            <CardContent className="space-y-4">
+              <p className="text-sm text-gray-600">{student.email}</p>
+              <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+                  onClick={() => {}}
+                  className="flex-1 border-gray-200 dark:border-gray-800 hover:bg-gray-50 cursor-pointer h-10"
                 >
                   <Edit className="w-4 h-4 mr-1" />
                   Edit
                 </Button>
                 <Button
-                  variant="outline"
-                  size="sm"
                   onClick={() => handleDeleteStudent(student.id)}
-                  className="flex-1 border-red-300 text-red-700 hover:bg-red-50 cursor-pointer"
+                  className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 border-none cursor-pointer h-10"
                 >
                   <Trash2 className="w-4 h-4 mr-1" />
                   Delete
