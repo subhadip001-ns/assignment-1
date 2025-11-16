@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -168,7 +167,7 @@ export function AIChat() {
                         <button
                           key={idx}
                           onClick={() => handleExampleClick(prompt.text)}
-                          className="group flex items-center gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-card hover:bg-accent transition-all text-left"
+                          className="group flex items-center gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-card hover:bg-accent transition-all text-left cursor-pointer"
                         >
                           <div className="p-2 rounded-md bg-primary/10 group-hover:bg-primary/20 transition-colors">
                             <Icon className="w-4 h-4 text-primary" />
@@ -224,7 +223,7 @@ export function AIChat() {
                           )}
                         >
                           <div className="prose prose-sm max-w-none dark:prose-invert">
-                            <p className="whitespace-pre-wrap break-words m-0 leading-relaxed">
+                            <p className="whitespace-pre-wrap m-0 leading-relaxed">
                               {message.content || (
                                 <span className="text-muted-foreground italic">Thinking...</span>
                               )}
@@ -234,7 +233,7 @@ export function AIChat() {
                             <button
                               onClick={() => handleCopy(message.content, message.id)}
                               className={cn(
-                                'absolute -top-2 -right-2 opacity-0 group-hover/message:opacity-100 transition-opacity p-1.5 rounded-full bg-background border border-gray-200 dark:border-gray-800 hover:bg-accent',
+                                'absolute -top-2 -right-2 opacity-0 group-hover/message:opacity-100 transition-opacity p-1.5 rounded-full bg-background border border-gray-200 dark:border-gray-800 hover:bg-accent cursor-pointer',
                                 isUser ? 'text-primary-foreground' : 'text-foreground'
                               )}
                               aria-label="Copy message"
@@ -302,11 +301,11 @@ export function AIChat() {
                   </div>
                 )}
               </div>
-              <Button
+              <button
+                type="button"
                 onClick={handleSendMessage}
                 disabled={!inputMessage.trim() || isLoading}
-                size="icon"
-                className="h-11 w-11 shrink-0"
+                className="h-11 w-11 shrink-0 flex items-center justify-center rounded-md bg-gray-900 hover:bg-gray-800 text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 aria-label="Send message"
               >
                 {isLoading ? (
@@ -314,7 +313,7 @@ export function AIChat() {
                 ) : (
                   <Send className="w-4 h-4" />
                 )}
-              </Button>
+              </button>
             </div>
             <p className="text-xs text-muted-foreground mt-2 px-1">
               AI can make mistakes. Verify important information.
