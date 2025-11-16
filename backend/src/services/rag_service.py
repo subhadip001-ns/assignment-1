@@ -194,27 +194,36 @@ Course ID: {course_id}
             max_results: Maximum number of courses to include
 
         Returns:
-            Formatted context string
+            Formatted HTML context string
         """
+        import html
+        
         try:
             results = self.search_courses(query, k=max_results)
 
             if not results:
-                return "No relevant course information found."
+                return "<h2>Course Search Results</h2><p><strong>No relevant course information found.</strong></p>"
 
-            context_parts = []
+            html_output = "<h2>Relevant Courses</h2>"
+            html_output += "<p>Here are the most relevant courses matching your query:</p>"
+            
             for i, course in enumerate(results, 1):
-                context_parts.append(f"""
-Course {i}:
-- Name: {course['course_name']}
-- ID: {course['course_id']}
-- Description: {course['description']}
-""")
+                html_output += f"<h3>Course {i}</h3>"
+                html_output += "<ul>"
+                course_name = html.escape(str(course['course_name']))
+                html_output += f"<li><strong>Name:</strong> {course_name}</li>"
+                html_output += f"<li><strong>ID:</strong> <code>{course['course_id']}</code></li>"
+                description = course['description'] if course['description'] else "<em>No description available</em>"
+                description = html.escape(description)
+                description = description.replace("\n", "<br>").replace("\r", "")
+                html_output += f"<li><strong>Description:</strong> {description}</li>"
+                html_output += "</ul>"
 
-            return "Here are the most relevant courses:\n" + "\n".join(context_parts)
+            return html_output
 
         except Exception as e:
-            return f"Error retrieving course context: {str(e)}"
+            error_msg = html.escape(str(e))
+            return f"<h2>Error</h2><p><strong>Error retrieving course context:</strong> <code>{error_msg}</code></p>"
 
 
 # Singleton instance

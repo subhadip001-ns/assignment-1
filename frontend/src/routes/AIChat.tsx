@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { aiApi } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import DOMPurify from 'dompurify'
 
 interface Message {
   id: string
@@ -218,17 +219,44 @@ export function AIChat() {
                           className={cn(
                             'relative group/message rounded-2xl px-4 py-3 max-w-[85%] sm:max-w-[75%]',
                             isUser
-                              ? 'bg-primary text-primary-foreground rounded-br-md'
-                              : 'bg-muted text-foreground rounded-bl-md'
+                              ? 'bg-gray-700 text-white rounded-br-md'
+                              : 'bg-gray-50 text-foreground rounded-bl-md border border-gray-200 dark:border-gray-800'
                           )}
                         >
-                          <div className="prose prose-sm max-w-none dark:prose-invert">
-                            <p className="whitespace-pre-wrap m-0 leading-relaxed">
-                              {message.content || (
+                          {isUser ? (
+                            <div className="prose prose-sm max-w-none dark:prose-invert">
+                              <p className="whitespace-pre-wrap m-0 leading-relaxed">
+                                {message.content}
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="prose prose-sm max-w-none dark:prose-invert 
+                              prose-headings:mt-0 prose-headings:mb-3 prose-headings:font-semibold
+                              prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg
+                              prose-p:my-2 prose-p:leading-relaxed prose-p:text-foreground
+                              prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-li:leading-relaxed
+                              prose-code:text-sm prose-code:bg-gray-100 prose-code:dark:bg-gray-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono
+                              prose-pre:bg-gray-100 prose-pre:dark:bg-gray-800 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto prose-pre:my-3
+                              prose-strong:font-semibold prose-strong:text-foreground
+                              prose-table:w-full prose-table:border-collapse prose-table:my-4
+                              prose-th:border prose-th:border-gray-300 prose-th:dark:border-gray-700 prose-th:bg-gray-50 prose-th:dark:bg-gray-800 prose-th:px-4 prose-th:py-2 prose-th:text-left prose-th:font-semibold
+                              prose-td:border prose-td:border-gray-300 prose-td:dark:border-gray-700 prose-td:px-4 prose-td:py-2
+                              prose-tr:hover:bg-gray-50 prose-tr:dark:hover:bg-gray-800/50">
+                              {message.content ? (
+                                <div 
+                                  dangerouslySetInnerHTML={{ 
+                                    __html: DOMPurify.sanitize(message.content, {
+                                      ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'code', 'pre', 'blockquote', 'a', 'div', 'span'],
+                                      ALLOWED_ATTR: ['href', 'class', 'id']
+                                    })
+                                  }}
+                                  className="html-content"
+                                />
+                              ) : (
                                 <span className="text-muted-foreground italic">Thinking...</span>
                               )}
-                            </p>
-                          </div>
+                            </div>
+                          )}
                           {message.content && (
                             <button
                               onClick={() => handleCopy(message.content, message.id)}
@@ -263,7 +291,7 @@ export function AIChat() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col gap-1.5 flex-1">
-                    <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 inline-block">
+                    <div className="bg-gray-50 rounded-2xl rounded-bl-md px-4 py-3 inline-block border border-gray-200 dark:border-gray-800">
                       <div className="flex items-center gap-1.5">
                         <div className="flex gap-1">
                           <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
