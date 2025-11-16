@@ -69,7 +69,7 @@ export function Layout() {
       to: '/ai-chat',
       icon: MessageSquare,
       label: 'AI Chat',
-      show: true,
+      show: !isAdmin,
     },
     {
       to: '/students',
