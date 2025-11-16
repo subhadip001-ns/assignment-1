@@ -80,8 +80,14 @@ async def chat_stream(
             try:
                 try:
                     for chunk in streaming_service.chat_stream(request.message, request.chat_history):
-                        buffer += chunk
-                        yield f"data: {chunk}\n\n"
+                        # Check if this is a tool call marker
+                        if chunk.startswith("[TOOL_CALLS]") and chunk.endswith("[/TOOL_CALLS]"):
+                            # Send tool calls as a special event
+                            tool_calls_data = chunk.replace("[TOOL_CALLS]", "").replace("[/TOOL_CALLS]", "")
+                            yield f"data: [TOOL_CALLS]{tool_calls_data}[/TOOL_CALLS]\n\n"
+                        else:
+                            buffer += chunk
+                            yield f"data: {chunk}\n\n"
                 except Exception as stream_err:  # Prevent server-side 500s during SSE
                     err_msg = f"Error: {str(stream_err)}"
                     buffer += err_msg

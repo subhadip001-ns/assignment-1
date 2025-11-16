@@ -153,7 +153,8 @@ export const aiApi = {
   streamChat: async (
     message: string,
     chatHistory: ChatMessage[],
-    onChunk: (chunk: string) => void
+    onChunk: (chunk: string) => void,
+    onToolCalls?: (toolCalls: Array<{ name: string; args: any; id: string }>) => void
   ) => {
     const response = await fetch(`${API_BASE_URL}/ai/chat/stream`, {
       method: 'POST',
@@ -193,7 +194,20 @@ export const aiApi = {
           if (data === '[DONE]') {
             return
           }
-          onChunk(data)
+          // Check for tool calls marker
+          if (data.startsWith('[TOOL_CALLS]') && data.endsWith('[/TOOL_CALLS]')) {
+            try {
+              const toolCallsJson = data.replace('[TOOL_CALLS]', '').replace('[/TOOL_CALLS]', '')
+              const toolCalls = JSON.parse(toolCallsJson)
+              if (onToolCalls) {
+                onToolCalls(toolCalls)
+              }
+            } catch (e) {
+              console.error('Failed to parse tool calls:', e)
+            }
+          } else {
+            onChunk(data)
+          }
         }
       }
     }

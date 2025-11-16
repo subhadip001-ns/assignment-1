@@ -11,6 +11,7 @@ import {
   Calculator,
   BookOpen,
   MessageCircle,
+  Wrench,
 } from 'lucide-react'
 import { aiApi } from '@/lib/api'
 import { cn } from '@/lib/utils'
@@ -21,12 +22,13 @@ interface Message {
   role: 'user' | 'assistant'
   content: string
   timestamp: Date
+  toolCalls?: Array<{ name: string; args: any; id: string }>
 }
 
 const examplePrompts = [
-  { icon: Calculator, text: 'What is 15 + 27?', label: 'Math' },
   { icon: BookOpen, text: 'Tell me about available courses', label: 'Courses' },
-  { icon: MessageCircle, text: 'Hello! How can you help me?', label: 'General' },
+  { icon: User, text: 'Enroll me into the course with ID 1', label: 'Enroll' },
+  { icon: MessageCircle, text: 'Show all courses where i m enrolled in', label: 'Enrolled Courses' },
 ]
 
 export function AIChat() {
@@ -90,6 +92,15 @@ export function AIChat() {
             prev.map(msg =>
               msg.id === assistantMessageId
                 ? { ...msg, content: msg.content + chunk }
+                : msg
+            )
+          )
+        },
+        (toolCalls: Array<{ name: string; args: any; id: string }>) => {
+          setMessages(prev =>
+            prev.map(msg =>
+              msg.id === assistantMessageId
+                ? { ...msg, toolCalls }
                 : msg
             )
           )
@@ -238,23 +249,54 @@ export function AIChat() {
                               prose-code:text-sm prose-code:bg-gray-100 prose-code:dark:bg-gray-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono
                               prose-pre:bg-gray-100 prose-pre:dark:bg-gray-800 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto prose-pre:my-3
                               prose-strong:font-semibold prose-strong:text-foreground
-                              prose-table:w-full prose-table:border-collapse prose-table:my-4
-                              prose-th:border prose-th:border-gray-300 prose-th:dark:border-gray-700 prose-th:bg-gray-50 prose-th:dark:bg-gray-800 prose-th:px-4 prose-th:py-2 prose-th:text-left prose-th:font-semibold
-                              prose-td:border prose-td:border-gray-300 prose-td:dark:border-gray-700 prose-td:px-4 prose-td:py-2
-                              prose-tr:hover:bg-gray-50 prose-tr:dark:hover:bg-gray-800/50">
+                              prose-table:w-full prose-table:border-collapse prose-table:my-4 prose-table:shadow-sm prose-table:rounded-lg prose-table:overflow-hidden prose-table:border prose-table:border-gray-200 prose-table:dark:border-gray-700
+                              prose-thead:bg-gradient-to-r prose-thead:from-gray-50 prose-thead:to-gray-100 prose-thead:dark:from-gray-800 prose-thead:dark:to-gray-900
+                              prose-th:border prose-th:border-gray-200 prose-th:dark:border-gray-700 prose-th:bg-transparent prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold prose-th:text-sm prose-th:text-gray-900 prose-th:dark:text-gray-100 prose-th:uppercase prose-th:tracking-wider
+                              prose-tbody:bg-white prose-tbody:dark:bg-gray-900
+                              prose-td:border prose-td:border-gray-200 prose-td:dark:border-gray-700 prose-td:px-4 prose-td:py-3 prose-td:text-sm prose-td:text-gray-700 prose-td:dark:text-gray-300
+                              prose-tr:border-b prose-tr:border-gray-200 prose-tr:dark:border-gray-700 prose-tr:transition-colors prose-tr:duration-150
+                              prose-tr:hover:bg-gray-50 prose-tr:dark:hover:bg-gray-800/50 prose-tr:last:border-b-0">
                               {message.content ? (
                                 <div 
                                   dangerouslySetInnerHTML={{ 
                                     __html: DOMPurify.sanitize(message.content, {
                                       ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'code', 'pre', 'blockquote', 'a', 'div', 'span'],
-                                      ALLOWED_ATTR: ['href', 'class', 'id']
+                                      ALLOWED_ATTR: ['href', 'class', 'id', 'style']
                                     })
                                   }}
-                                  className="html-content"
+                                  className="html-content [&_table]:w-full [&_table]:border-collapse [&_table]:my-4 [&_table]:shadow-sm [&_table]:rounded-lg [&_table]:overflow-hidden [&_table]:border [&_table]:border-gray-200 dark:[&_table]:border-gray-700 [&_table]:bg-white dark:[&_table]:bg-gray-900 [&_thead]:bg-gradient-to-r [&_thead]:from-gray-50 [&_thead]:to-gray-100 dark:[&_thead]:from-gray-800 dark:[&_thead]:to-gray-900 [&_th]:px-4 [&_th]:py-3 [&_th]:text-left [&_th]:font-semibold [&_th]:text-sm [&_th]:text-gray-900 dark:[&_th]:text-gray-100 [&_th]:uppercase [&_th]:tracking-wider [&_th]:border-b [&_th]:border-gray-200 dark:[&_th]:border-gray-700 [&_td]:px-4 [&_td]:py-3 [&_td]:text-sm [&_td]:text-gray-700 dark:[&_td]:text-gray-300 [&_td]:border-b [&_td]:border-gray-100 dark:[&_td]:border-gray-800 [&_tr]:transition-colors [&_tr]:duration-150 [&_tr:hover]:bg-gray-50 dark:[&_tr:hover]:bg-gray-800/50"
                                 />
                               ) : (
                                 <span className="text-muted-foreground italic">Thinking...</span>
                               )}
+                            </div>
+                          )}
+                          {message.toolCalls && message.toolCalls.length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                              <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground mb-2">
+                                <Wrench className="w-3 h-3" />
+                                <span>Tools Used:</span>
+                              </div>
+                              <div className="space-y-2">
+                                {message.toolCalls.map((toolCall, idx) => (
+                                  <div
+                                    key={toolCall.id || idx}
+                                    className="bg-gray-100 dark:bg-gray-800 rounded-md p-2.5 text-xs border border-gray-200 dark:border-gray-700"
+                                  >
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                      <span className="font-medium text-primary">
+                                        {toolCall.name}
+                                      </span>
+                                    </div>
+                                    <div className="text-muted-foreground font-mono text-[10px] bg-gray-50 dark:bg-gray-900 rounded p-1.5 overflow-x-auto">
+                                      <pre className="whitespace-pre-wrap break-words">
+                                        {JSON.stringify(toolCall.args, null, 2)}
+                                      </pre>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           )}
                           {message.content && (

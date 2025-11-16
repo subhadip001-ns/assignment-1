@@ -10,6 +10,7 @@ from ..ai.tools import (
     fetch_all_courses as fetch_courses_tool,
     enroll_into_course as enroll_tool,
     unenroll_from_course as unenroll_tool,
+    get_student_enrolled_courses as get_student_courses_tool,
     add_numbers as add_numbers_tool,
     search_course_information as search_course_information_tool
 )
@@ -118,7 +119,7 @@ class AIService:
         )
 
         # Define tools
-        self.tools = [add_numbers_tool, fetch_courses_tool, enroll_tool, unenroll_tool, search_course_information_tool]
+        self.tools = [add_numbers_tool, fetch_courses_tool, enroll_tool, unenroll_tool, get_student_courses_tool, search_course_information_tool]
 
         # Bind tools to the LLM
         self.llm_with_tools = self.llm.bind_tools(self.tools)
@@ -176,6 +177,12 @@ class AIService:
                             content=str(result),
                             tool_call_id=tool_call["id"]
                         ))
+                    elif tool_call["name"] == "get_student_enrolled_courses":
+                        result = get_student_courses_tool.invoke(tool_call["args"])
+                        tool_results.append(ToolMessage(
+                            content=str(result),
+                            tool_call_id=tool_call["id"]
+                        ))
                     elif tool_call["name"] == "search_course_information":
                         result = search_course_information_tool.invoke(tool_call["args"])
                         tool_results.append(ToolMessage(
@@ -221,6 +228,18 @@ class AIService:
             print("AI Message: ", ai_msg.content)
             print("Tool Calls: ", ai_msg.tool_calls)
 
+            # Send tool call information to frontend
+            if ai_msg.tool_calls:
+                import json
+                tool_calls_info = []
+                for tool_call in ai_msg.tool_calls:
+                    tool_calls_info.append({
+                        "name": tool_call.get("name", ""),
+                        "args": tool_call.get("args", {}),
+                        "id": tool_call.get("id", "")
+                    })
+                yield f"[TOOL_CALLS]{json.dumps(tool_calls_info)}[/TOOL_CALLS]"
+
             if ai_msg.tool_calls:
                 # Execute the tools
                 tool_results = []
@@ -245,6 +264,12 @@ class AIService:
                         ))
                     elif tool_call["name"] == "unenroll_from_course":
                         result = unenroll_tool.invoke(tool_call["args"])
+                        tool_results.append(ToolMessage(
+                            content=str(result),
+                            tool_call_id=tool_call["id"]
+                        ))
+                    elif tool_call["name"] == "get_student_enrolled_courses":
+                        result = get_student_courses_tool.invoke(tool_call["args"])
                         tool_results.append(ToolMessage(
                             content=str(result),
                             tool_call_id=tool_call["id"]
